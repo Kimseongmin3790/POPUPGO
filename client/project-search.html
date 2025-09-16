@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="common.css">
+    <script src="common.js"></script> <!-- 이전에 만든 JS -->
+    <style>
+        table,
+        tr,
+        th,
+        td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 5px 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: beige;
+        }
+
+        tr:nth-child(even) {
+            background-color: azure;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div id="header-container"></div>
+
+        <div id="page-wrapper">
+            <div id="container">
+                <input type="text">
+                <button>검색</button>
+                <div>
+                    <a href="project-main.html"><button>메인으로</button></a>
+                </div>
+            </div>
+        </div>
+
+        <div id="footer-container"></div>
+    </div>
+</body>
+
+</html>
+
+<script>
+    const app = Vue.createApp({
+        data() {
+            return {
+                // 변수 - (key : value)
+
+            };
+        },
+        methods: {
+            // 함수(메소드) - (key : function())
+            fnList: function () {
+                let self = this;
+                let param = {};
+                $.ajax({
+                    url: "http://localhost:3009/",
+                    dataType: "json",
+                    type: "GET",
+                    data: param,
+                    success: function (data) {
+
+                    }
+                });
+            },
+            checkLoginStatus() {
+                // sessionStorage에서 아이디와 권한 가져오기
+                const userId = sessionStorage.getItem('sessionId');
+                const userStatus = sessionStorage.getItem('sessionStatus'); // 예: "ADMIN" / "USER"
+                this.isLoggedIn = !!userId;
+
+                // 로그인/로그아웃 버튼
+                const authBtn = document.getElementById('auth-btn');
+                if (authBtn) {
+                    authBtn.textContent = this.isLoggedIn ? '로그아웃' : '로그인';
+                    authBtn.onclick = () => {
+                        if (this.isLoggedIn) {
+                            // 로그아웃 처리
+                            sessionStorage.clear();
+                            this.isLoggedIn = false;
+                            authBtn.textContent = '로그인';
+                            document.getElementById('admin-btn').style.display = 'none';
+                            location.href = "project-login.html";
+                        } else {
+                            // 로그인 페이지 이동
+                            location.href = "project-login.html";
+                        }
+                    };
+                }
+
+                // 관리자 버튼
+                const adminBtn = document.getElementById('admin-btn');
+                if (adminBtn) {
+                    if (userStatus === 'A') {
+                        adminBtn.style.display = 'inline-block';
+                        adminBtn.onclick = () => {
+                            // 관리자 페이지 이동
+                            location.href = "project-admin.html";
+                        };
+                    } else {
+                        adminBtn.style.display = 'none';
+                    }
+                }
+            }
+        }, // methods
+        mounted() {
+            // 처음 시작할 때 실행되는 부분
+            let self = this;
+            const headerCheckInterval = setInterval(() => {
+                if (document.getElementById('auth-btn')) {
+                    clearInterval(headerCheckInterval);
+                    this.checkLoginStatus();
+                }
+            }, 100);
+        }
+    });
+
+    app.mount('#app');
+</script>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        table,
+        tr,
+        th,
+        td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 5px 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: beige;
+        }
+
+        tr:nth-child(even) {
+            background-color: azure;
+        }
+
+        table {
+            display: inline-block;
+            vertical-align: top;
+            margin-right: 20px;
+        }
+
+        .admin-menu button {
+            margin-right: 10px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        /* 트랜지션 스타일 */
+        .fade-enter-active,
+        .fade-leave-active {
+            transition: all 0.5s ease;
+        }
+
+        .fade-enter-from,
+        .fade-leave-to {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="admin-menu">
+            <a href="project-main.html"><button>메인으로</button></a>
+            <button @click="showTable('notice')">공지사항 관리</button>
+            <button @click="showTable('qna')">문의게시판 관리</button>
+            <button @click="showTable('store')">스토어 관리</button>
+            <button @click="showTable('user')">회원 관리</button>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <transition name="fade">
+                <table v-show="visibleTable !== null && visibleTable !== 'user'">
+                    <tr>
+                        <th>제목</th>
+                        <th>내용</th>
+                        <th>아이디</th>
+                        <th>조회수</th>
+                        <th>업로드시간</th>
+                        <th>수정한시간</th>
+                        <th>수정</th>
+                        <th>삭제</th>
+                    </tr>
+                    <tr v-for="item in list">
+                        <td>{{item.TITLE}}</td>
+                        <td>{{item.CONTENTS}}</td>
+                        <td>{{item.USERID}}</td>
+                        <td>{{item.CNT}}</td>
+                        <td>{{item.CDATETIME}}</td>
+                        <td>{{item.UDATETIME}}</td>
+                        <td><button @click="fnEdit(item.BOARDNO, visibleTable)">수정</button></td>
+                        <td><button @click="fnRemove(item.BOARDNO, visibleTable)">삭제</button></td>
+                    </tr>
+                </table>
+            </transition>
+
+            <transition name="fade">
+                <table v-show="visibleTable === 'user'">
+                    <tr>
+                        <th>아이디</th>
+                        <th>비밀번호</th>
+                        <th>이름</th>
+                        <th>생년월일</th>
+                        <th>닉네임</th>
+                        <th>주소</th>
+                        <th>휴대전화</th>
+                        <th>이메일</th>
+                        <th>성별</th>
+                        <th>권한</th>
+                        <th>생성시간</th>
+                        <th>최종수정시간</th>
+                        <th>수정</th>
+                        <th>삭제</th>
+                    </tr>
+                    <tr v-for="info in userList">
+                        <td>{{info.USERID}}</td>
+                        <td>{{info.PASSWORD}}</td>
+                        <td>{{info.NAME}}</td>
+                        <td>{{info.BIRTH}}</td>
+                        <td>{{info.NICKNAME}}</td>
+                        <td>{{info.ADDRESS}}</td>
+                        <td>{{info.PHONE}}</td>
+                        <td>{{info.EMAIL}}</td>
+                        <td>{{info.GENDER}}</td>
+                        <td>{{info.STATUS}}</td>
+                        <td>{{info.CTIME}}</td>
+                        <td>{{info.UTIME}}</td>
+                        <td><button @click="fnEdit(null, null, info.USERID)">수정</button></td>
+                        <td><button @click="fnRemoveUser(info.USERID)">삭제</button></td>
+                    </tr>
+                </table>
+            </transition>
+        </div>
+    </div>
+</body>
+
+</html>
+
+<script>
+    const app = Vue.createApp({
+        data() {
+            return {
+                // 변수 - (key : value)
+                list: [],
+                userList: [],
+                visibleTable: null
+            };
+        },
+        methods: {
+            // 함수(메소드) - (key : function())
+            fetchBoard(kind) {
+                let self = this;
+                $.ajax({
+                    url: "http://localhost:3009/all/list",
+                    type: "GET",
+                    dataType: "json",
+                    data: { kind: kind },
+                    success: function (data) {
+                        self.list = data.list;
+                    }
+                });
+            },
+            fnUserList: function () {
+                let self = this;
+                let param = {};
+                $.ajax({
+                    url: "http://localhost:3009/user/list",
+                    dataType: "json",
+                    type: "GET",
+                    data: param,
+                    success: function (data) {
+                        self.userList = data.userList;
+                    }
+                });
+            },
+            showTable(tableName) {
+                let self = this;
+                self.visibleTable = tableName;
+                if (tableName === 'notice') self.fetchBoard(self.visibleTable);
+                else if (tableName === 'qna') self.fetchBoard(self.visibleTable);
+                else if (tableName === 'store') self.fetchBoard(self.visibleTable);
+                else if (tableName === 'user') self.fnUserList();
+            },
+            fnEdit: function (boardNo, kind, userId) {
+                location.href = `project-edit.html?boardNo=${boardNo}&kind=${kind}&userId=${userId}`;
+            },
+            fnRemove: function (boardNo, kind) {
+                let self = this;
+                if (!confirm("정말 삭제하시겠습니까?")) {
+                    return;
+                }
+                let param = {
+                    boardNo: boardNo,
+                    kind: kind
+                };
+                $.ajax({
+                    url: "http://localhost:3009/board/remove",
+                    dataType: "json",
+                    type: "GET",
+                    data: param,
+                    success: function (data) {
+                        if (data.result == "success") {
+                            alert("삭제되었습니다");
+                            location.href = "project-admin.html";
+                        }
+                    }
+                });
+            },
+            fnRemoveUser: function (userId) {
+                let self = this;
+                if (!confirm("정말 삭제하시겠습니까?")) {
+                    return;
+                }
+                let param = {
+                    userId: userId
+                };
+                $.ajax({
+                    url: "http://localhost:3009/user/remove",
+                    dataType: "json",
+                    type: "GET",
+                    data: param,
+                    success: function (data) {
+                        if (data.result == "success") {
+                            alert("삭제되었습니다");
+                            location.href = "project-admin.html";
+                        }
+                    }
+                });
+            }
+
+        }, // methods
+        mounted() {
+            // 처음 시작할 때 실행되는 부분
+            let self = this;
+        }
+    });
+
+    app.mount('#app');
+</script>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공지사항 상세</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="common.css">
+    <script src="common.js"></script> <!-- 이전에 만든 JS -->
+    <style>
+        body {
+            font-family: "Noto Sans KR", Arial, sans-serif;
+            margin: 0;
+            background: #f8f8f8;
+        }
+
+        #app {
+            width: 800px;
+            margin: 30px auto;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .meta {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .content {
+            font-size: 16px;
+            line-height: 1.7;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+            color: #333;
+        }
+
+        a.back {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+
+        a.back:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header-container"></div>
+    <div id="app">
+        <div id="container">
+            <div id="contents">
+                <div class="card">
+                    <div class="title">{{ info.TITLE }}</div>
+                    <div class="meta">
+                        작성자: {{ info.USERID }} | 조회수: {{ info.CNT }} | 작성일: {{ info.CDATETIME }}
+                    </div>
+                    <div class="content" v-html="info.CONTENTS"></div>
+                    <a href="project-board.html?kind=1&THEME=null" class="back">← 목록으로 돌아가기</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="footer-container"></div>
+
+</body>
+
+</html>
+<script>
+    const app = Vue.createApp({
+        data() {
+            return { info: {}, boardNo: "" };
+        },
+        methods: {
+            fnInfo() {
+                let self = this;
+                $.ajax({
+                    url: "http://localhost:3009/board/info",
+                    dataType: "json",
+                    type: "GET",
+                    data: { boardNo: self.boardNo },
+                    success(data) {
+                        self.info = data.info;
+                    }
+                });
+            }
+        },
+        mounted() {
+            let attempts = 0;
+            const headerCheckInterval = setInterval(() => {
+                attempts++;
+                const authBtn = document.getElementById('auth-btn');
+                if (authBtn || attempts > 50) { // 50*100ms = 5초 후 종료
+                    clearInterval(headerCheckInterval);
+                    if (authBtn) checkLoginStatus();
+                }
+            }, 100);
+            const queryParams = new URLSearchParams(window.location.search);
+            this.boardNo = queryParams.get('boardNo') || '';
+            this.fnInfo();
+        }
+    });
+    app.mount('#app');
+</script>

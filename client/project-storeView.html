@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Board Info</title>
+  <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+    crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+  <style>
+    /* --- 기본 레이아웃 --- */
+    #app {
+      width: 880px;
+      margin: 30px auto;
+      font-family: "Noto Sans KR", "Segoe UI", Roboto, sans-serif;
+      color: #222;
+      background: #fff;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    /* 상단 히어로 */
+    .ticket-hero {
+      display: flex;
+      gap: 24px;
+      padding: 22px;
+      align-items: flex-start;
+      border-bottom: 1px solid #eee;
+      background: linear-gradient(180deg, #fff 0%, #fbfbfd 100%);
+    }
+
+    .ticket-hero .poster {
+      width: 240px;
+      height: 320px;
+      border-radius: 6px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      background-size: cover;
+      background-position: center;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .ticket-hero .meta {
+      flex: 1;
+    }
+
+    .ticket-hero .meta h1 {
+      font-size: 22px;
+      margin: 0 0 8px;
+      line-height: 1.25;
+      color: #111;
+    }
+
+    .ticket-hero .meta .sub {
+      color: #666;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    /* 버튼 */
+    .action-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-top: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(180deg, #ff6a00, #ff3b00);
+      color: #fff;
+      box-shadow: 0 6px 18px rgba(255, 90, 30, 0.18);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #ddd;
+      color: #333;
+    }
+
+    /* 상세 테이블 */
+    .ticket-info {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 18px;
+      padding: 22px;
+    }
+
+    .ticket-info .left {
+      background: transparent;
+    }
+
+    .ticket-info .right {
+      background: #fbfbff;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid #f0f0f5;
+      min-height: 120px;
+    }
+
+    .ticket-info table {
+      width: 100%;
+      border: none;
+      border-collapse: separate;
+    }
+
+    .ticket-info th {
+      background: #f7f7fb;
+      color: #333;
+      font-weight: 700;
+      padding: 10px 12px;
+      text-align: left;
+      width: 120px;
+      border-radius: 6px 6px 0 0;
+    }
+
+    .ticket-info td {
+      padding: 12px;
+      vertical-align: top;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    /* 내용 */
+    .content-html {
+      border: 1px solid #efeff5;
+      padding: 16px;
+      border-radius: 6px;
+      min-height: 260px;
+      background: #fff;
+      color: #222;
+      box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.01);
+    }
+
+    /* 하단 고정 구매바 */
+    .buy-bar {
+      position: sticky;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      gap: 12px;
+      padding: 12px 24px;
+      align-items: center;
+      justify-content: flex-end;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.96));
+      border-top: 1px solid #eee;
+    }
+
+    .buy-bar .price {
+      font-weight: 800;
+      font-size: 18px;
+      margin-right: auto;
+    }
+
+    .buy-bar .btn {
+      min-width: 140px;
+    }
+
+    /* 반응형 */
+    @media (max-width: 960px) {
+      #app {
+        width: 100%;
+        margin: 12px;
+        border-radius: 6px;
+      }
+
+      .ticket-hero {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .ticket-hero .poster {
+        width: 70%;
+        height: 320px;
+      }
+
+      .ticket-info {
+        grid-template-columns: 1fr;
+      }
+
+      .buy-bar {
+        position: fixed;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <!-- 상단 히어로 바로 위에 버튼 추가 -->
+    <div style="display:flex; justify-content:flex-start; gap:12px; padding:16px;">
+      <button class="btn btn-outline" @click="goBack">이전으로</button>
+      <button class="btn btn-outline" @click="goMain">메인으로</button>
+    </div>
+
+    <!-- 상단 히어로 -->
+    <div class="ticket-hero">
+      <div class="poster" :style="{ backgroundImage: `url(${info.POSTER || 'https://via.placeholder.com/240x320'})` }">
+      </div>
+      <div class="meta">
+        <h1>{{ info.TITLE }}</h1>
+        <div class="sub">판매자: {{ info.USERID }} · 등록일: {{ info.CDATETIME }}</div>
+        <div class="action-row">
+          <button class="btn btn-primary" @click="fnPopup(boardNo)">예매 / 구매</button>
+          <button class="btn btn-outline">관심상품</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 상세 -->
+    <div class="ticket-info">
+      <div class="left">
+        <table>
+          <tr>
+            <th>제목</th>
+            <td>{{info.TITLE}}</td>
+          </tr>
+          <tr>
+            <th>아이디</th>
+            <td>{{info.USERID}}</td>
+          </tr>
+          <tr>
+            <th>내용</th>
+            <td>
+              <div class="content-html" v-html="info.CONTENTS"></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="right">
+        <div style="font-weight:700; font-size:16px; margin-bottom:8px;">공연 요약</div>
+        <div style="font-size:13px; color:#555; margin-bottom:12px;">
+          9.20(토) ~ 9.30 (화) / 강남역 5번 출구 인근
+        </div>
+        <div>
+          <button class="btn btn-primary" style="width:100%;" @click="fnPopup(boardNo)">예매하기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 하단 고정바 -->
+    <div class="buy-bar">
+      <div class="price">₩{{ info.PRICE || '0' }}</div>
+      <button class="btn btn-outline">관심</button>
+      <button class="btn btn-primary" @click="fnPopup(boardNo)">예매 / 구매</button>
+    </div>
+  </div>
+
+  <script>
+    const app = Vue.createApp({
+      data() {
+        return {
+          info: {},
+          boardNo: "",
+          sessionId: ""
+        };
+      },
+      methods: {
+        fnInfo: function () {
+          let self = this;
+          let param = { boardNo: self.boardNo };
+          $.ajax({
+            url: "http://localhost:3009/board/info",
+            dataType: "json",
+            type: "GET",
+            data: param,
+            success: function (data) {
+              self.info = data.info;
+            }
+          });
+        },
+        fnPopup: function (boardNo) {
+          let self = this;
+          if (self.sessionId == null) {
+            alert("로그인 후 예약할 수 있습니다");
+            location.href = "project-login.html";
+            return;
+          }
+          window.open(`project-reservation.html?boardNo=${boardNo}`, "reserv", 'width=600, height=650, top=50, left=50')
+        },
+        goBack: function () {
+          history.back(); // 이전 페이지로 이동
+        },
+        goMain: function () {
+          location.href = "project-main.html"; // 메인 페이지로 이동
+        }
+      },
+      mounted() {
+        let self = this;
+        const queryParams = new URLSearchParams(window.location.search);
+        self.boardNo = queryParams.get('boardNo') || '';
+        self.sessionId = sessionStorage.getItem('sessionId');
+        self.fnInfo();
+      }
+    });
+    app.mount('#app');
+  </script>
+</body>
+
+</html>

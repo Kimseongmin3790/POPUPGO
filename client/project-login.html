@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 페이지</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #app {
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            width: 320px;
+            text-align: center;
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        #app h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: #444;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #74b9ff;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-login {
+            background: #74b9ff;
+            color: #fff;
+        }
+
+        .btn-login:hover {
+            background: #0984e3;
+        }
+
+        .btn-join {
+            background: #55efc4;
+            color: #fff;
+        }
+
+        .btn-join:hover {
+            background: #00b894;
+        }
+
+        .btn-main {
+            background: #ffeaa7;
+            color: #333;
+        }
+
+        .btn-main:hover {
+            background: #fdcb6e;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <h2>로그인</h2>
+        <div class="input-group">
+            <label>아이디</label>
+            <input type="text" v-model="userId">
+        </div>
+        <div class="input-group">
+            <label>비밀번호</label>
+            <input type="password" v-model="userPwd">
+        </div>
+        <button class="btn btn-login" @click="fnLogin">로그인</button>
+        <button class="btn btn-join" @click="fnJoin">회원가입</button>
+        <a href="project-main.html"><button class="btn btn-main">메인으로</button></a>
+    </div>
+
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    userId: "",
+                    userPwd: ""
+                };
+            },
+            methods: {
+                fnLogin() {
+                    let self = this;
+                    let param = {
+                        userId: self.userId,
+                        userPwd: self.userPwd
+                    };
+                    $.ajax({
+                        url: "http://localhost:3009/user/login",
+                        dataType: "json",
+                        type: "GET",
+                        data: param,
+                        success: function (data) {
+                            if (data.length > 0) {
+                                alert(data[0].NAME + "님 환영합니다.");
+                                sessionStorage.setItem("sessionId", data[0].USERID);
+                                sessionStorage.setItem("sessionStatus", data[0].STATUS);
+                                location.href = "project-main.html";
+                            } else {
+                                alert("아이디/비밀번호를 확인해주세요.");
+                            }
+                        }
+                    });
+                },
+                fnJoin() {
+                    location.href = "project-join.html";
+                }
+            }
+        });
+
+        app.mount("#app");
+    </script>
+</body>
+
+</html>

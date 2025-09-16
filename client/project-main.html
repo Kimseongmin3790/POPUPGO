@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>팝업 예약 사이트</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="common.css">
+    <script src="common.js"></script> <!-- 이전에 만든 JS -->
+    <style>
+        /* 공지사항 */
+        #notice {
+            width: 90%;
+            margin: 20px auto;
+            /* 중앙 정렬 */
+            padding: 15px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            overflow: auto;
+            max-height: 200px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #notice h3 {
+            margin: 0 0 8px 0;
+            font-size: 18px;
+            color: #333;
+        }
+
+        #notice p {
+            margin: 0;
+            font-size: 14px;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        #slider {
+            width: 60%;
+            max-width: 800px;
+            height: 400px;
+            margin: 30px auto;
+            /* 중앙 정렬 */
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 슬라이드 트랙 */
+        .slide-track {
+            display: flex;
+            transition: transform 0.8s ease-in-out;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 슬라이드 아이템 */
+        .slide-item {
+            min-width: 100%;
+            height: 100%;
+            flex-shrink: 0;
+        }
+
+        .slide-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            /* 화면 꽉 채우기 */
+            border-radius: 12px;
+        }
+
+        /* 이전/다음 버튼 */
+        .slide-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            font-size: 24px;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 50%;
+            z-index: 10;
+        }
+
+        .slide-btn:hover {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .slide-btn.prev {
+            left: 10px;
+        }
+
+        .slide-btn.next {
+            right: 10px;
+        }
+
+        /* 인디케이터 */
+        .indicators {
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .indicators span {
+            display: block;
+            width: 12px;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .indicators span.active {
+            background: white;
+        }
+
+        #menuList {
+            width: 60%;
+            max-width: 800px;
+            margin: 30px auto 60px auto;
+            /* footer랑 간격 확보 */
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .gridMenu {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            /* 2열 */
+            gap: 15px;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        .gridMenu li {
+            height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .gridMenu li:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+
+        /* 각 버튼별 이미지 적용 */
+        .menu-movie {
+            background-image: url("images/movie.webp");
+        }
+
+        .menu-comic {
+            background-image: url("images/comic.jfif");
+        }
+
+        .menu-food {
+            background-image: url("images/food.jfif");
+        }
+
+        .menu-cafe {
+            background-image: url("images/cafe.jfif");
+        }
+
+        .gridMenu li:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div id="header-container"></div>
+
+        <div id="page-wrapper">
+            <div id="container">
+                <div id="contents">
+                    <div id="notice">
+                        <h3>{{noticeTitle}}</h3>
+                        <p>{{noticeContents}}</p>
+                    </div>
+                    <div id="slider">
+                        <!-- 슬라이드 트랙 -->
+                        <div class="slide-track" :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
+                            <div class="slide-item" v-for="(img, index) in images" :key="index">
+                                <img :src="img.src" @click="goToLink(img.link)" style="cursor:pointer;" />
+                            </div>
+                        </div>
+                        <!-- 이전/다음 버튼 -->
+                        <button class="slide-btn prev" @click="prevSlide">❮</button>
+                        <button class="slide-btn next" @click="nextSlide">❯</button>
+                        <!-- 인디케이터 -->
+                        <div class="indicators">
+                            <span v-for="(img, index) in images" :key="index"
+                                :class="{ active: currentIndex === index }" @click="goToSlide(index)">
+                            </span>
+                        </div>
+                    </div>
+                    <div id="menuList">
+                        <ul class="gridMenu">
+                            <li class="menu-movie" @click="callStoreList(3, 'MOVIE')">영화</li>
+                            <li class="menu-comic" @click="callStoreList(3, 'COMIC')">만화</li>
+                            <li class="menu-food" @click="callStoreList(3, 'FOOD')">음식</li>
+                            <li class="menu-cafe" @click="callStoreList(3, 'CAFE')">카페</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="footer-container"></div>
+    </div>
+</body>
+
+</html>
+
+<script>
+    const app = Vue.createApp({
+        data() {
+            return {
+                // 변수 - (key : value)
+                noticeTitle: '',
+                noticeContents: '',
+                isMenuOpen: false,
+                isLoggedIn: false,
+                images: [
+                    { src: "images/html.jpg", link: "project-storeView.html?boardNo=S1" },
+                    { src: "images/java.jpg", link: "project-storeView.html?boardNo=S2" },
+                    { src: "images/java2.jpg", link: "project-storeView.html?boardNo=S3" },
+                    { src: "images/java3.jpg", link: "project-storeView.html?boardNo=S4" }
+                ],
+                currentIndex: 0,
+                intervalId: null
+            };
+        },
+        methods: {
+            // 함수(메소드) - (key : function())
+
+            async fetchNotice() {
+                try {
+                    const res = await fetch('http://localhost:3009/api/notice');
+                    const data = await res.json();
+                    this.noticeTitle = data.title;
+                    this.noticeContents = data.contents;
+                } catch (err) {
+                    console.error(err);
+                }
+            },
+            toggleMenu() {
+                this.isMenuOpen = !this.isMenuOpen;
+            },
+            startSlider() {
+                this.intervalId = setInterval(this.nextSlide, 5000);
+            },
+            stopSlider() {
+                clearInterval(this.intervalId);
+                this.intervalId = null;
+            },
+            nextSlide() {
+                this.currentIndex = (this.currentIndex + 1) % this.images.length;
+            },
+            prevSlide() {
+                this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
+            },
+            goToSlide(index) {
+                this.currentIndex = index;
+            },
+            goToLink(link) {
+                if (link) {
+                    window.open(link, "_blank"); // 새 창 열기
+                    // location.href = link;   // 같은 창에서 열고 싶으면 이 코드 사용
+                }
+            },
+            callStoreList(num, kind) {
+                if (typeof fnstoreList === "function") {
+                    fnstoreList(num, kind);
+                } else {
+                    console.error("fnstoreList 함수 없음");
+                }
+            },
+
+
+        }, // methods
+        mounted() {
+            // 처음 시작할 때 실행되는 부분
+            let self = this;
+            self.startSlider();
+            self.fetchNotice();
+            let attempts = 0;
+            const headerCheckInterval = setInterval(() => {
+                attempts++;
+                const authBtn = document.getElementById('auth-btn');
+                if (authBtn || attempts > 50) { // 50*100ms = 5초 후 종료
+                    clearInterval(headerCheckInterval);
+                    if (authBtn) checkLoginStatus();
+                }
+            }, 100);
+        },
+        beforeUnmount() {
+            this.stopSlider();
+        }
+    });
+
+    app.mount('#app');
+</script>

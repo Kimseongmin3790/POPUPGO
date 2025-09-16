@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시판 목록</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="common.css">
+    <script src="common.js"></script>
+    <style>
+        /* 전체 배경 */
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f4f6f9;
+        }
+
+        /* 컨테이너 */
+        #container {
+            width: 1000px;
+            margin: 20px auto;
+            display: flex;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        #category-bar {
+            width: 100%;
+            background: #fafafa;
+            border-bottom: 1px solid #ddd;
+            padding: 10px 20px;
+        }
+
+        #category-bar ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            /* 가로 나열 */
+            gap: 15px;
+            /* 메뉴 간격 */
+        }
+
+        #category-bar li {
+            margin: 0;
+        }
+
+        #category-bar a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: 0.2s;
+        }
+
+        #category-bar a:hover {
+            background: #eaeaea;
+        }
+
+        #category-bar a.active {
+            background: #007bff;
+            color: #fff;
+        }
+
+        /* 메인 영역 */
+        #main {
+            flex: 1;
+            padding: 20px;
+        }
+
+        /* 게시판 테이블 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th,
+        td {
+            border-bottom: 1px solid #ddd;
+            padding: 12px 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f1f3f5;
+            font-weight: bold;
+            color: #444;
+        }
+
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+
+        tr:hover {
+            background: #f9f9f9;
+        }
+
+        /* 제목 열 왼쪽 정렬 */
+        td:nth-child(2) {
+            text-align: left;
+            color: #007bff;
+        }
+
+        td:nth-child(2) a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        td:nth-child(2) a:hover {
+            text-decoration: underline;
+        }
+
+        /* 버튼 */
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        /* 페이징 */
+        .pagination {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .pagination a,
+        .pagination button {
+            display: inline-block;
+            margin: 0 4px;
+            padding: 6px 12px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #fff;
+            color: #333;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+        }
+
+        .pagination a:hover,
+        .pagination button:hover {
+            background: #f1f1f1;
+        }
+
+        .pagination a.active {
+            background: #007bff;
+            color: #fff;
+            border-color: #007bff;
+        }
+
+        .pagination button:disabled {
+            background: #eee;
+            color: #aaa;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div id="header-container"></div>
+
+        <div id="page-wrapper">
+            <div id="container">
+                <!-- 사이드바 -->
+                <div id="category-bar">
+                    <h3>게시판 목록</h3>
+                    <ul>
+                        <li><a href="javascript:;" :class="{active: category==='1'}"
+                                @click="fnCategory('notice')">공지사항</a>
+                        </li>
+                        <li><a href="javascript:;" :class="{active: category==='2'}"
+                                @click="fnCategory('qna')">문의게시판</a>
+                        </li>
+                        <li><a href="javascript:;" :class="{active: category==='3'}"
+                                @click="fnCategory('store')">스토어목록</a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- 메인 영역 -->
+                <div id="main">
+                    <select v-model="pageSize" @change="fnList">
+                        <option value="5">5개씩</option>
+                        <option value="10">10개씩</option>
+                        <option value="20">20개씩</option>
+                    </select>
+                    <table>
+                        <tr>
+                            <th>번호</th>
+                            <th>제목</th>
+                            <th>작성자</th>
+                            <th>조회수</th>
+                            <th>작성일</th>
+                        </tr>
+                        <tr v-for="item in list" :key="item.BOARDNO">
+                            <td>{{item.BOARDNO}}</td>
+                            <td><a href="javascript:;" @click="fnView(item.BOARDNO)">{{item.TITLE}}</a></td>
+                            <td>{{item.USERID}}</td>
+                            <td>{{item.CNT}}</td>
+                            <td>{{item.CDATE}}</td>
+                        </tr>
+                    </table>
+                    <div class="pagination">
+                        <button @click="fnMove(-1)" :disabled="page===1">이전</button>
+                        <a v-for="n in index" :key="n" href="javascript:;" :class="{active: page===n}"
+                            @click="fnPage(n)">{{n}}</a>
+                        <button @click="fnMove(1)" :disabled="page===index">다음</button>
+                    </div>
+                    <div>
+                        <button @click="fnAdd">글쓰기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="footer-container"></div>
+    </div>
+</body>
+
+</html>
+
+<script>
+    const app = Vue.createApp({
+        data() {
+            return {
+                // 변수 - (key : value)
+                list: [],
+                index: 5, // 표현할 페이지 개수
+                pageSize: 5, // 한 페이지에 보여줄 게시글 수
+                page: 1, // 현재 페이지(위치)
+                category: '1',
+                theme: "null"
+            };
+        },
+        methods: {
+            // 함수(메소드) - (key : function())
+            fnList: function () {
+                let self = this;
+                let param = {
+                    category: self.category,
+                    theme: self.theme,
+                    pageSize: self.pageSize,
+                    offset: (self.page - 1) * self.pageSize
+                };
+                $.ajax({
+                    url: "http://localhost:3009/board/list",
+                    dataType: "json",
+                    type: "GET",
+                    data: param,
+                    success: function (data) {
+                        self.list = data.boardList;
+                        self.index = Math.ceil(data.count / self.pageSize);
+                    }
+                });
+            },
+            fnView: function (boardNo) {
+                let self = this;
+                $.ajax({
+                    url: "http://localhost:3009/board/increaseCnt",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({ boardNo: boardNo }),
+                    success: function () {
+                        if (self.category == 1) {
+                            location.href = "project-noticeView.html?boardNo=" + boardNo;
+                        } else if (self.category == 2) {
+                            location.href = "project-qnaView.html?boardNo=" + boardNo;
+                        } else if (self.category == 3) {
+                            location.href = "project-storeView.html?boardNo=" + boardNo;
+                        }
+                    }
+                });
+            },
+            fnPage: function (num) {
+                let self = this;
+                self.page = num;
+                self.fnList();
+            },
+            fnMove: function (move) {
+                let self = this;
+                self.page += move;
+                self.fnList();
+            },
+            fnCategory: function (cat) {
+                let self = this;
+                if (cat == 'notice') {
+                    self.category = 1;
+                } else if (cat == 'qna') {
+                    self.category = 2;
+                } else if (cat == 'store') {
+                    self.category = 3;
+                }
+                self.page = 1; // 카테고리 바꿀 때 1페이지로
+                self.theme = 'null';
+                console.log(self.category);
+                self.fnList();
+            },
+            fnAdd: function () {
+                if (sessionStorage.getItem('sessionId') === null) {
+                    alert("로그인 후 글을 작성할 수 있습니다");
+                    location.href = "project-login.html";
+                    return;
+                }
+                location.href = "project-add.html";
+            }
+        }, // methods
+        mounted() {
+            // 처음 시작할 때 실행되는 부분
+            let self = this;
+            const queryParams = new URLSearchParams(window.location.search);
+            self.category = queryParams.get('kind') || '';
+            self.theme = queryParams.get('THEME') || '';
+            self.fnList();
+            let attempts = 0;
+            const headerCheckInterval = setInterval(() => {
+                attempts++;
+                const authBtn = document.getElementById('auth-btn');
+                if (authBtn || attempts > 50) { // 50*100ms = 5초 후 종료
+                    clearInterval(headerCheckInterval);
+                    if (authBtn) checkLoginStatus();
+                }
+            }, 100);
+        }
+    });
+
+    app.mount('#app');
+</script>

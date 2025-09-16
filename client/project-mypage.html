@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마이페이지</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="common.css">
+    <script src="common.js"></script> <!-- 이전에 만든 JS -->
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #main-content {
+            flex: 1;
+            /* 컨텐츠가 남는 공간을 채움 */
+        }
+
+        #container {
+            min-height: 100vh;
+            /* 화면 전체 높이 */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .profile-card {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-card img {
+            width: 80px;
+            /* 가로 크기 */
+            height: 80px;
+            /* 세로 크기 */
+            object-fit: cover;
+            /* 이미지 비율 유지하면서 잘림 처리 */
+            border-radius: 50%;
+            /* 원형 이미지 */
+            margin-right: 1rem;
+        }
+
+        .profile-info h2 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .profile-info p {
+            margin: 0.2rem 0;
+            color: #555;
+        }
+
+        .profile-actions button {
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            margin-right: 0.5rem;
+        }
+
+        .reservation-table {
+            background-color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        .reservation-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .reservation-table th,
+        .reservation-table td {
+            padding: 0.8rem;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .reservation-table th {
+            background-color: #f0f0f0;
+        }
+
+        .reservation-table tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        @media (max-width: 600px) {
+            .profile-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .profile-card img {
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div id="header-container"></div>
+
+        <div id="container" style="display: none;">
+            <div id="contents">
+                <div class="profile-card">
+                    <img src="images/cafe.jfif" alt="프로필 이미지" id="">
+                    <div class="profile-info">
+                        <h2 id="user-name"></h2>
+                        <p id="user-email"></p>
+                        <p id="user-phone"></p>
+                        <div class="profile-actions">
+                            <button @click="fnEdit">정보 수정</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- 예약 내역 테이블 -->
+                <div class="reservation-table">
+                    <h3>예약 내역</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>예약번호</th>
+                                <th>예약날짜</th>
+                                <th>예약시간</th>
+                                <th>장소</th>
+                                <th>인원수</th>
+                                <th>가격</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="item in list">
+                                <td>{{item.RESV_ID}}</td>
+                                <td>{{item.RDATE}}</td>
+                                <td>{{item.R_TIME}}</td>
+                                <td>{{item.PLACE}}</td>
+                                <td>{{item.P_CNT}}</td>
+                                <td>{{item.PRICE}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- 공통 푸터 -->
+        <div id="footer-container"></div>
+    </div>
+
+</body>
+
+</html>
+<script>
+    $(document).ready(function () {
+        // 로그인 상태 체크 (예: sessionStorage)
+        const userId = sessionStorage.getItem('sessionId');
+        if (userId == null) {
+            alert('로그인이 필요합니다.');
+            location.href = 'project-login.html';
+        } else {
+            $('#container').show();
+        }
+
+        // DB에서 사용자 정보 불러오기 (예시 Ajax)
+        $.ajax({
+            url: 'http://localhost:3009/user/info',  // 서버에서 사용자 정보 반환
+            method: 'GET',
+            data: { userId: userId },
+            success: function (data) {
+                $('#user-name').text(data.info.NAME);
+                $('#user-email').text(data.info.EMAIL);
+                $('#user-phone').text(data.info.PHONE);
+                if (data.info.PROFILE_IMG) $('#profile-img').attr('src', data.info.PROFILE_IMG);
+            }
+        });
+    });
+
+    const app = Vue.createApp({
+        data() {
+            return {
+                // 변수 - (key : value)
+                sessionId: "",
+                list: []
+            };
+        },
+        methods: {
+            // 함수(메소드) - (key : function())
+            fnList: function () {
+                let self = this;
+                let param = {
+                    userId: self.sessionId
+                };
+                $.ajax({
+                    url: "http://localhost:3009/user/reservation",
+                    dataType: "json",
+                    type: "GET",
+                    data: param,
+                    success: function (data) {
+                        self.list = data.list;
+                    }
+                });
+            },
+            fnEdit: function () {
+                let userId = this.sessionId;
+                location.href = `project-edit.html?boardNo=null&kind=null&userId=${userId}`;
+            }
+        }, // methods
+        mounted() {
+            // 처음 시작할 때 실행되는 부분
+            let self = this;
+            let attempts = 0;
+            const headerCheckInterval = setInterval(() => {
+                attempts++;
+                const authBtn = document.getElementById('auth-btn');
+                if (authBtn || attempts > 50) { // 50*100ms = 5초 후 종료
+                    clearInterval(headerCheckInterval);
+                    if (authBtn) checkLoginStatus();
+                }
+            }, 100);
+            self.sessionId = sessionStorage.getItem('sessionId');
+            self.fnList();
+        }
+    });
+
+    app.mount('#app');
+</script>

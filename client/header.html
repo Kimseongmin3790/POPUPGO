@@ -1,0 +1,26 @@
+<div id="header">
+    <div class="header-left">
+        <a href="project-main.html">
+            <h2>POPUPSTORE</h2>
+        </a>
+    </div>
+
+    <div class="header-center">
+        <div class="menu-board">
+            게시판
+            <ul class="side-menu">
+                <li onclick="fnstoreList(1,'null')">공지사항</li>
+                <li onclick="fnstoreList(2,'null')">문의게시판</li>
+                <li onclick="fnstoreList(3,'null')">스토어</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="header-right">
+        <button onclick="fnSearch()">검색</button>
+        <button onclick="fnMyPage()">내 정보</button>
+        <button id="auth-btn" onclick="fnLogin()">로그인</button>
+        <button id="admin-btn" style="display: none;">관리자</button>
+        <a href="project-join.html"><button>회원가입</button></a>
+    </div>
+</div>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시판 글쓰기</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="common.css">
+    <script src="common.js"></script>
+    <style>
+        body {
+            font-family: 'Pretendard', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            color: #333;
+        }
+
+        #app {
+            max-width: 720px;
+            margin: auto;
+            background: #fff;
+            padding: 40px 50px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+            font-weight: 600;
+            color: #222;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            width: 25%;
+            text-align: left;
+            padding: 14px 10px;
+            font-size: 15px;
+            color: #555;
+            font-weight: 500;
+            vertical-align: top;
+        }
+
+        td {
+            padding: 12px 10px;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            outline: none;
+            font-size: 15px;
+            background: #fafafa;
+            transition: all 0.2s ease;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            border-color: #4a90e2;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
+        }
+
+        textarea {
+            height: 140px;
+            resize: none;
+        }
+
+        label {
+            margin-right: 20px;
+            font-size: 15px;
+            cursor: pointer;
+            color: #444;
+        }
+
+        input[type="radio"] {
+            accent-color: #4a90e2;
+            margin-right: 6px;
+        }
+
+        .btn-box {
+            text-align: center;
+            margin-top: 35px;
+        }
+
+        button {
+            padding: 14px 40px;
+            border: none;
+            border-radius: 12px;
+            background: #4a90e2;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.15s;
+        }
+
+        button:hover {
+            background: #357abd;
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        #write-container {
+            max-width: 720px;
+            margin: auto;
+            background: #fff;
+            padding: 40px 50px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header-container"></div>
+    <div id="app">
+        <div id="write-container">
+            <h2>게시판 글쓰기</h2>
+            <table>
+                <tr>
+                    <th>게시판 타입</th>
+                    <td>
+                        <label><input type="radio" v-model="kind" value="1">공지사항</label>
+                        <label><input type="radio" v-model="kind" value="2">문의게시판</label>
+                        <label><input type="radio" v-model="kind" value="3">스토어</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th>제목</th>
+                    <td><input type="text" placeholder="제목을 입력하세요" v-model="title"></td>
+                </tr>
+                <tr v-if="kind === '3'">
+                    <th>테마</th>
+                    <td>
+                        <label><input type="radio" v-model="theme" value="MOVIE">영화</label>
+                        <label><input type="radio" v-model="theme" value="COMIC">만화</label>
+                        <label><input type="radio" v-model="theme" value="FOOD">음식</label>
+                        <label><input type="radio" v-model="theme" value="CAFE">카페</label>
+                    </td>
+                </tr>
+                <tr v-if="kind === '3'">
+                    <th>총 인원수</th>
+                    <td><input type="text" placeholder="최대 인원수를 입력하세요" v-model="cnt"></td>
+                </tr>
+                <tr v-if="kind === '3'">
+                    <th>가격</th>
+                    <td><input type="text" placeholder="가격을 입력하세요" v-model="price"></td>
+                </tr>
+                <tr>
+                    <th>내용</th>
+                    <td><textarea placeholder="내용을 입력하세요" v-model="contents"></textarea></td>
+                </tr>
+            </table>
+            <div class="btn-box">
+                <button @click="fnAdd">글 쓰기</button>
+            </div>
+        </div>
+    </div>
+    <div id="footer-container"></div>
+</body>
+
+</html>
+
+<script>
+    const app = Vue.createApp({
+        data() {
+            return {
+                // 변수 - (key : value)
+                kind: "",
+                title: "",
+                contents: "",
+                userId: "",
+                theme: "",
+                cnt: "",
+                price: ""
+            };
+        },
+        methods: {
+            // 함수(메소드) - (key : function())
+            fnAdd: function () {
+                let self = this;
+                let param = {
+                    kind: self.kind,
+                    title: self.title,
+                    contents: self.contents,
+                    userId: self.userId,
+                    theme: self.theme,
+                    Pcnt: self.cnt,
+                    price: self.price
+                };
+                $.ajax({
+                    url: "http://localhost:3009/board/add",
+                    dataType: "json",
+                    type: "GET",
+                    data: param,
+                    success: function (data) {
+                        if (data.result == "success") {
+                            alert("글이 작성되었습니다");
+                            location.href="project-board.html?kind=1&THEME=null";
+                        }
+                    }
+                });
+            },
+            checkLoginStatus() {
+                // sessionStorage에서 아이디와 권한 가져오기
+                const userId = sessionStorage.getItem('sessionId');
+                const userStatus = sessionStorage.getItem('sessionStatus'); // 예: "ADMIN" / "USER"
+                this.isLoggedIn = !!userId;
+
+                // 로그인/로그아웃 버튼
+                const authBtn = document.getElementById('auth-btn');
+                if (authBtn) {
+                    authBtn.textContent = this.isLoggedIn ? '로그아웃' : '로그인';
+                    authBtn.onclick = () => {
+                        if (this.isLoggedIn) {
+                            // 로그아웃 처리
+                            sessionStorage.clear();
+                            this.isLoggedIn = false;
+                            authBtn.textContent = '로그인';
+                            document.getElementById('admin-btn').style.display = 'none';
+                            location.href = "project-login.html";
+                        } else {
+                            // 로그인 페이지 이동
+                            location.href = "project-login.html";
+                        }
+                    };
+                }
+
+                // 관리자 버튼
+                const adminBtn = document.getElementById('admin-btn');
+                if (adminBtn) {
+                    if (userStatus === 'A') {
+                        adminBtn.style.display = 'inline-block';
+                        adminBtn.onclick = () => {
+                            // 관리자 페이지 이동
+                            location.href = "project-admin.html";
+                        };
+                    } else {
+                        adminBtn.style.display = 'none';
+                    }
+                }
+            }
+        }, // methods
+        mounted() {
+            // 처음 시작할 때 실행되는 부분
+            let self = this;
+            self.userId = sessionStorage.getItem('sessionId');
+            const headerCheckInterval = setInterval(() => {
+                if (document.getElementById('auth-btn')) {
+                    clearInterval(headerCheckInterval);
+                    this.checkLoginStatus();
+                }
+            }, 100);
+        }
+    });
+
+    app.mount('#app');
+</script>

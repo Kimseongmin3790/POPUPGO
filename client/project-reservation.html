@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>팝업 스토어 예약</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 600px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin: 10px 0;
+        }
+
+        .calendar button {
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            background-color: #eee;
+            cursor: pointer;
+        }
+
+        .calendar button.active {
+            background-color: #4CAF50;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .calendar button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        label {
+            display: flex;
+            flex-direction: column;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input, select, button {
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #message {
+            margin-top: 15px;
+            font-weight: bold;
+            color: green;
+            text-align: center;
+        }
+
+        .calendar-day {
+            text-align: center;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .week-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            margin-bottom: 5px;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="container">
+            <h1>팝업 스토어 예약</h1>
+
+            <div class="store-info" v-if="step === 1 || step === 2">
+                <h2>{{ info.TITLE }}</h2>
+                <p>운영 시간: 10:00 ~ 20:00</p>
+                <p>남은 좌석: <span>{{ info.P_CNT }}</span></p>
+            </div>
+
+            <!-- 1단계: 달력에서 날짜 선택 -->
+            <div v-if="step === 1">
+                <h2>예약 가능한 날짜 선택</h2>
+                <div class="week-days">
+                    <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+                </div>
+                <div class="calendar">
+                    <button v-for="day in monthDays" :key="day.date" 
+                            :disabled="!day.available"
+                            :class="{active: selectedDate === day.date}"
+                            @click="selectedDate = day.date">
+                        {{ day.day }}
+                    </button>
+                </div>
+                <button :disabled="!selectedDate" @click="step = 2">다음</button>
+            </div>
+
+            <!-- 2단계: 시간과 인원 선택 -->
+            <div v-if="step === 2">
+                <h2>{{ selectedDate }} 예약 정보 입력</h2>
+                <form @submit.prevent="reserve">
+                    <label>예약 시간:
+                        <select v-model="resTime" required>
+                            <option value="">선택</option>
+                            <option v-for="time in availableTimes" :key="time" :value="time">{{ time }}</option>
+                        </select>
+                    </label>
+
+                    <label>예약 인원:
+                        <input type="number" v-model.number="resPerson" min="1" :max="info.P_CNT" required>
+                    </label>
+
+                    <button type="submit">예약 완료</button>
+                    <button type="button" @click="step = 1">뒤로</button>
+                </form>
+            </div>
+
+            <div id="message">{{ message }}</div>
+        </div>
+    </div>
+
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    step: 1,
+                    info: {},
+                    monthDays: [], // 달력 정보 {date: 'YYYY-MM-DD', day: 1~31, available: true/false}
+                    selectedDate: '',
+                    availableTimes: ['10:00','11:00','12:00','13:00','14:00','15:00'],
+                    resTime: '',
+                    resPerson: 1,
+                    message: '',
+                    boardNo: '',
+                    sessionId: ''
+                };
+            },
+            methods: {
+                fnInfo() {
+                    let self = this;
+                    $.ajax({
+                        url: "http://localhost:3009/board/info",
+                        dataType: "json",
+                        type: "GET",
+                        data: { boardNo: self.boardNo },
+                        success: function(data) {
+                            self.info = data.info;
+
+                            // 서버에서 예약 가능한 날짜를 배열로 받아서 달력 생성
+                            // 예시: ['2025-09-16', '2025-09-18', '2025-09-20']
+                            const availableDates = data.availableDates; 
+
+                            // 이번 달 달력 생성
+                            const now = new Date();
+                            const year = now.getFullYear();
+                            const month = now.getMonth(); // 0~11
+                            const lastDay = new Date(year, month+1, 0).getDate();
+                            const firstDayWeek = new Date(year, month, 1).getDay();
+
+                            let days = [];
+                            for(let i=0;i<firstDayWeek;i++){
+                                days.push({date: '', day: '', available: false}); // 빈칸
+                            }
+
+                            for(let d=1; d<=lastDay; d++){
+                                const dateStr = `${year}-${(month+1).toString().padStart(2,'0')}-${d.toString().padStart(2,'0')}`;
+                                days.push({
+                                    date: dateStr,
+                                    day: d,
+                                    available: availableDates.includes(dateStr)
+                                });
+                            }
+                            self.monthDays = days;
+                        }
+                    });
+                },
+                reserve() {
+                    let self = this;
+                    if (!self.resTime || !self.resPerson) {
+                        alert("시간과 인원을 선택해주세요.");
+                        return;
+                    }
+                    if (self.resPerson > self.info.P_CNT) {
+                        alert(`남은 좌석이 부족합니다. 현재 남은 좌석: ${self.info.P_CNT}`);
+                        return;
+                    }
+
+                    $.ajax({
+                        url: "http://localhost:3009/reservation",
+                        dataType: "json",
+                        type: "GET",
+                        data: {
+                            sessionId: self.sessionId,
+                            storeId: self.info.USERID,
+                            resDate: self.selectedDate,
+                            resTime: self.resTime,
+                            resPerson: self.resPerson,
+                            boardNo: self.boardNo
+                        },
+                        success: function (data) {
+                            if (data.success) {
+                                alert("예약 되었습니다!");
+                            }
+                            self.message = `${self.selectedDate} 예약 완료!`;
+                            self.step = 1;
+                            self.selectedDate = '';
+                            self.resTime = '';
+                            self.resPerson = 1;
+                            self.fnInfo(); // 남은 좌석 및 달력 갱신
+                        },
+                        error: (err) => {
+                            alert("예약 중 오류가 발생했습니다.");
+                        }
+                    });
+                }
+            },
+            mounted() {
+                const queryParams = new URLSearchParams(window.location.search);
+                this.boardNo = queryParams.get('boardNo') || '';
+                this.sessionId = sessionStorage.getItem('sessionId');
+                this.fnInfo();
+            }
+        });
+
+        app.mount('#app');
+    </script>
+</body>
+
+</html>

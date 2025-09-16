@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+        }
+
+        .form-box {
+            max-width: 500px;
+            margin: auto;
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-box h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        textarea {
+            min-height: 80px;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" class="form-box">
+        <h2>데이터 수정</h2>
+
+        <div v-if="userId == 'undefined'">
+            <div class="form-group">
+                <label>제목</label>
+                <input v-model="boardData.TITLE">
+            </div>
+            <div class="form-group">
+                <label>내용</label>
+                <textarea v-model="boardData.CONTENTS"></textarea>
+            </div>
+            <div class="form-group" v-if="kind == 'store'">
+                <label>테마</label>
+                <input v-model="boardData.KIND">
+            </div>
+            <div class="form-group" v-if="kind == 'store'">
+                <label>인원수</label>
+                <input v-model="boardData.P_CNT">
+            </div>
+            <div class="form-group" v-if="kind == 'store'">
+                <label>가격</label>
+                <input v-model="boardData.PRICE">
+            </div>
+            <button class="btn" @click="fnUpdateBoard">수정하기</button>
+        </div>
+
+        <!-- 유저 데이터일 경우 -->
+        <div v-else>
+            <div class="form-group">
+                <label>비밀번호</label>
+                <input v-model="userData.PASSWORD" type="password">
+            </div>
+            <div class="form-group">
+                <label>이름</label>
+                <input v-model="userData.NAME">
+            </div>
+            <div class="form-group">
+                <label>닉네임</label>
+                <input v-model="userData.NICKNAME">
+            </div>
+            <div class="form-group">
+                <label>주소</label>
+                <input v-model="userData.ADDRESS">
+            </div>
+            <div class="form-group">
+                <label>휴대전화</label>
+                <input v-model="userData.PHONE">
+            </div>
+            <div class="form-group">
+                <label>이메일</label>
+                <input v-model="userData.EMAIL">
+            </div>
+            <button class="btn" @click="fnUpdateUser">수정하기</button>
+        </div>
+    </div>
+</body>
+
+</html>
+
+<script>
+    const app = Vue.createApp({
+        data() {
+            return {
+                // 변수 - (key : value)
+                boardNo: "",
+                kind: "",
+                userId: "",
+                boardData: {},
+                userData: {}
+            };
+        },
+        methods: {
+            // 함수(메소드) - (key : function())
+            fnLoadData: function () {
+                let self = this;
+                if (self.userId == 'undefined') {
+                    $.ajax({
+                        url: "http://localhost:3009/all/list",
+                        dataType: "json",
+                        type: "GET",
+                        data: { boardNo: self.boardNo, kind: self.kind },
+                        success: function (data) {
+                            self.boardData = data.list[0];
+                        },
+                        error: function (err) {
+                            console.error(err);
+                        }
+                    });
+                } else {
+                    $.ajax({
+                        url: "http://localhost:3009/user/list",
+                        dataType: "json",
+                        type: "GET",
+                        data: { userId: self.userId },
+                        success: function (data) {
+                            self.userData = data.userList[0];
+                        },
+                        error: function (err) {
+                            console.error(err);
+                        }
+                    });
+                }
+            },
+            fnUpdateBoard: function () {
+                let self = this;
+                $.ajax({
+                    url: "http://localhost:3009/all/update/" + self.boardNo,
+                    type: "PUT",
+                    contentType: "application/json",
+                    data: JSON.stringify(self.boardData),
+                    success: function (res) {
+                        alert("게시판 데이터가 수정되었습니다!");
+                        location.href="project-admin.html";
+                    },
+                    error: function (err) {
+                        console.error(err);
+                    }
+                });
+            },
+            fnUpdateUser: function () {
+                let self = this;
+                $.ajax({
+                    url: "http://localhost:3009/user/update/" + self.userId,
+                    type: "PUT",
+                    contentType: "application/json",
+                    data: JSON.stringify(self.userData),
+                    success: function (res) {
+                        alert("회원 데이터가 수정되었습니다!");
+                        location.href="project-main.html";
+                    },
+                    error: function (err) {
+                        console.error(err);
+                    }
+                });
+            }
+        }, // methods
+        mounted() {
+            // 처음 시작할 때 실행되는 부분
+            let self = this;
+            const queryParams = new URLSearchParams(window.location.search);
+            self.boardNo = queryParams.get('boardNo') || '';
+            self.kind = queryParams.get('kind') || '';
+            self.userId = queryParams.get('userId') || '';
+
+            self.fnLoadData();
+        }
+    });
+
+    app.mount('#app');
+</script>

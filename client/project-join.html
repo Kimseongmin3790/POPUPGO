@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입</title>
+
+    <!-- jQuery & Vue -->
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <!-- 공통 CSS -->
+    <link rel="stylesheet" href="common.css">
+
+    <!-- 페이지별 스타일 -->
+    <style>
+        body {
+            font-family: "Noto Sans KR", sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        #app {
+            width: 400px;
+            margin: 80px auto 60px auto;
+            /* 상단 header, 하단 footer 공간 확보 */
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 30px 40px;
+            box-sizing: border-box;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #444;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="email"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            outline: none;
+            transition: border 0.2s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="email"]:focus {
+            border-color: #007bff;
+        }
+
+        .status-group,
+        .gender-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 5px;
+        }
+
+        .gender-group label {
+            font-weight: normal;
+        }
+
+        .form-actions {
+            margin-top: 15px;
+        }
+
+        .form-actions button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: background 0.2s ease;
+        }
+
+        .form-actions button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            transition: all 0.2s ease;
+        }
+
+        .btn-check {
+            background: #6c757d;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn-check:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .btn-join {
+            background: #007bff;
+            color: #fff;
+        }
+
+        .btn-main {
+            background: #28a745;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 상단 헤더 -->
+    <div id="header-container"></div>
+
+    <!-- 회원가입 폼 -->
+    <div id="app">
+        <h2>회원가입</h2>
+
+        <div class="form-group">
+            <label>회원가입 유형</label>
+            <div class="status-group">
+                <label><input type="radio" v-model="status" value="C">일반</label>
+                <label><input type="radio" v-model="status" value="S">스토어 관리자</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>아이디</label>
+            <input type="text" v-model="id">
+            <button class="btn-check" @click="fnCheck">중복체크</button>
+        </div>
+
+        <div class="form-group">
+            <label>비밀번호</label>
+            <input type="password" v-model="pwd">
+        </div>
+
+        <div class="form-group">
+            <label>비밀번호 확인</label>
+            <input type="password" v-model="pwd2">
+        </div>
+
+        <div class="form-group">
+            <label>이름</label>
+            <input type="text" v-model="name">
+        </div>
+
+        <div class="form-group">
+            <label>성별</label>
+            <div class="gender-group">
+                <label><input type="radio" v-model="gender" value="M"> 남자</label>
+                <label><input type="radio" v-model="gender" value="F"> 여자</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>생년월일</label>
+            <input type="text" v-model="birth" placeholder="YYYYMMDD">
+        </div>
+
+        <div class="form-group">
+            <label>닉네임</label>
+            <input type="text" v-model="nickName">
+        </div>
+
+        <div class="form-group">
+            <label>주소</label>
+            <input type="text" v-model="addr">
+        </div>
+
+        <div class="form-group">
+            <label>휴대전화</label>
+            <input type="text" v-model="phone" placeholder="010-0000-0000">
+        </div>
+
+        <div class="form-group">
+            <label>이메일</label>
+            <input type="email" v-model="email" placeholder="example@email.com">
+        </div>
+
+        <div class="form-actions">
+            <button class="btn-join" @click="fnJoin">가입하기</button>
+            <a href="project-main.html">
+                <button type="button" class="btn-main">메인으로</button>
+            </a>
+        </div>
+    </div>
+
+    <!-- 하단 푸터 -->
+    <div id="footer-container"></div>
+
+    <!-- 공통 JS -->
+    <script src="common.js"></script>
+
+    <!-- 페이지별 Vue 로직 -->
+    <script>
+        $(function () {
+            // header.html / footer.html 로드
+            $('#header-container').load('header.html');
+            $('#footer-container').load('footer.html');
+        });
+
+        const app = Vue.createApp({
+            data() {
+                return {
+                    id: "",
+                    pwd: "",
+                    pwd2: "",
+                    name: "",
+                    birth: "",
+                    nickName: "",
+                    addr: "",
+                    phone: "",
+                    email: "",
+                    gender: "M",
+                    status: "C",
+                    check: false
+                };
+            },
+            methods: {
+                fnJoin() {
+                    if (!this.check) {
+                        alert("중복체크 후 가입해주세요");
+                        return;
+                    }
+                    if (this.pwd !== this.pwd2) {
+                        alert("비밀번호가 일치하지 않습니다");
+                        return;
+                    }
+
+                    const param = {
+                        id: this.id,
+                        pwd: this.pwd,
+                        name: this.name,
+                        birth: this.birth,
+                        nickName: this.nickName,
+                        addr: this.addr,
+                        phone: this.phone,
+                        email: this.email,
+                        gender: this.gender,
+                        status: this.status
+                    };
+
+                    $.ajax({
+                        url: "http://localhost:3009/user/join",
+                        dataType: "json",
+                        type: "GET",
+                        data: param,
+                        success: function (data) {
+                            if (data.result === "success") {
+                                alert("가입되었습니다");
+                                location.href = "project-login.html";
+                            }
+                        }
+                    });
+                },
+                fnCheck() {
+                    if (this.id.length < 5) {
+                        alert("아이디는 5글자 이상 입력해주세요");
+                        return;
+                    }
+
+                    $.ajax({
+                        url: "http://localhost:3009/user/check",
+                        dataType: "json",
+                        type: "GET",
+                        data: { userId: this.id },
+                        success: (data) => {
+                            if (data.info != null) {
+                                alert("중복된 아이디 입니다.");
+                            } else {
+                                alert("가입 가능한 아이디 입니다.");
+                                this.check = true;
+                            }
+                        }
+                    });
+                },
+                fnAddr() {
+                    window.open("jusoPopup.html", "addr", "width=500, height=500");
+                }
+            }
+        });
+
+        app.mount('#app');
+    </script>
+</body>
+
+</html>

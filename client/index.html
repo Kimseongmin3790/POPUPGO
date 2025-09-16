@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>팝업 예약 사이트</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/vue-router@4"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <style>
+        /* ===== Header / Footer ===== */
+        #header {
+            height: 10%;
+            background-color: rgb(199, 199, 199);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .header-left h2 {
+            margin: 0;
+        }
+
+        .header-center {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        .header-right button {
+            margin-left: 15px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            background: #4CAF50;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+        }
+
+        .header-right button:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+        }
+
+        .header-right button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .menu-board {
+            position: relative;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 8px 16px;
+        }
+
+        .menu-board .side-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 150px;
+            background: white;
+            border: 1px solid #aaa;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            z-index: 1000;
+        }
+
+        .menu-board .side-menu li {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .menu-board .side-menu li:hover {
+            background: #f2f2f2;
+        }
+
+        .menu-board:hover .side-menu {
+            display: block;
+        }
+
+        #footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            background: #333;
+            color: #f1f1f1;
+            padding: 20px 40px;
+            margin-top: 40px;
+        }
+
+        #footer div {
+            flex: 1;
+            margin: 0 10px;
+        }
+
+        .footer-left h3,
+        .footer-center h4,
+        .footer-right h4 {
+            margin-bottom: 10px;
+        }
+
+        .footer-center ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-center ul li {
+            margin: 5px 0;
+        }
+
+        .footer-center ul li a {
+            text-decoration: none;
+            color: #f1f1f1;
+        }
+
+        .footer-center ul li a:hover {
+            text-decoration: underline;
+        }
+
+        #clock {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        /* ===== MainPage ===== */
+        #contents {
+            min-height: 70vh;
+        }
+
+        #notice {
+            width: 50%;
+            margin: 20px auto;
+            padding: 15px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            overflow: auto;
+            max-height: 200px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #notice h3 {
+            margin: 0 0 8px 0;
+            font-size: 18px;
+            color: #333;
+        }
+
+        #notice p {
+            margin: 0;
+            font-size: 14px;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        #slider {
+            width: 60%;
+            max-width: 800px;
+            height: 400px;
+            margin: 30px auto;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .slide-track {
+            display: flex;
+            transition: transform 0.8s ease-in-out;
+            width: 100%;
+            height: 100%;
+        }
+
+        .slide-item {
+            min-width: 100%;
+            height: 100%;
+            flex-shrink: 0;
+        }
+
+        .slide-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 12px;
+        }
+
+        .slide-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            font-size: 24px;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 50%;
+            z-index: 10;
+        }
+
+        .slide-btn:hover {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .slide-btn.prev {
+            left: 10px;
+        }
+
+        .slide-btn.next {
+            right: 10px;
+        }
+
+        .indicators {
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .indicators span {
+            display: block;
+            width: 12px;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .indicators span.active {
+            background: white;
+        }
+
+        #menuList {
+            width: 60%;
+            max-width: 800px;
+            margin: 30px auto 60px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .gridMenu {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 0;
+            margin: 0;
+        }
+
+        .gridMenu li {
+            height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .gridMenu li:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+
+        .menu-movie {
+            background-image: url("images/movie.webp");
+        }
+
+        .menu-comic {
+            background-image: url("images/comic.jfif");
+        }
+
+        .menu-food {
+            background-image: url("images/food.jfif");
+        }
+
+        .menu-cafe {
+            background-image: url("images/cafe.jfif");
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <header-component>
+        </header-component>
+        <router-view></router-view>
+        <footer-component></footer-component>
+    </div>
+    <script src="app.js"></script>
+</body>
+
+</html>
+<script>
+    // ===== Header =====
+    const HeaderComponent = {
+        template: `
+    <div id="header">
+      <div class="header-left"><h2>POPUPSTORE</h2></div>
+      <div class="header-center">
+        <div class="menu-board">
+          게시판
+          <ul class="side-menu">
+            <li @click="$router.push('/notice')">공지사항</li>
+            <li @click="$router.push('/qna')">문의게시판</li>
+            <li @click="$router.push('/store')">스토어</li>
+          </ul>
+        </div>
+      </div>
+      <div class="header-right">
+        <button @click="$router.push('/search')">검색</button>
+        <button @click="$router.push('/mypage')">내 정보</button>
+        <button @click="$router.push('/login')">로그인</button>
+        <button @click="$router.push('/join')">회원가입</button>
+      </div>
+    </div>
+  `
+    };
+
+    // ===== Footer =====
+    const FooterComponent = {
+        template: `
+    <footer id="footer">
+      <div class="footer-left">
+        <h3>MySite</h3>
+        <p>이 사이트는 개인 프로젝트로 제작되었습니다.<br>© 2025 MySite. All rights reserved.</p>
+      </div>
+      <div class="footer-center">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><router-link to="/">홈</router-link></li>
+          <li><router-link to="/notice">공지사항</router-link></li>
+          <li><router-link to="/qna">문의게시판</router-link></li>
+          <li><router-link to="/login">로그인</router-link></li>
+        </ul>
+      </div>
+      <div class="footer-right">
+        <h4>Follow Us</h4>
+        <div class="social-icons">
+          <a href="#">🔗</a>
+          <a href="#">🐦</a>
+          <a href="#">📸</a>
+        </div>
+        <div id="clock">{{ clock }}</div>
+      </div>
+    </footer>
+  `,
+        data() { return { clock: "" } },
+        mounted() {
+            setInterval(() => {
+                const now = new Date();
+                this.clock = now.toLocaleDateString() + " " + now.toLocaleTimeString();
+            }, 1000);
+        }
+    };
+
+    // ===== MainPage =====
+    const MainPage = {
+        template: `
+    <div id="contents">
+      <div id="notice">
+        <h3>{{ noticeTitle }}</h3>
+        <p>{{ noticeContents }}</p>
+      </div>
+
+      <div id="slider" @mouseenter="stopSlider" @mouseleave="startSlider">
+        <div class="slide-track" :style="{ transform:'translateX(-' + currentIndex*100 + '%)' }">
+          <div class="slide-item" v-for="(img,index) in images" :key="index">
+            <img :src="img.src" @click="goToLink(img.link)" style="cursor:pointer;">
+          </div>
+        </div>
+        <button class="slide-btn prev" @click="prevSlide">❮</button>
+        <button class="slide-btn next" @click="nextSlide">❯</button>
+        <div class="indicators">
+          <span v-for="(img,index) in images" :key="index"
+                :class="{active:currentIndex===index}"
+                @click="goToSlide(index)"></span>
+        </div>
+      </div>
+
+      <div id="menuList">
+        <ul class="gridMenu">
+          <li class="menu-movie" @click="$router.push('/store?theme=MOVIE')">영화</li>
+          <li class="menu-comic" @click="$router.push('/store?theme=COMIC')">만화</li>
+          <li class="menu-food" @click="$router.push('/store?theme=FOOD')">음식</li>
+          <li class="menu-cafe" @click="$router.push('/store?theme=CAFE')">카페</li>
+        </ul>
+      </div>
+    </div>
+  `,
+        data() {
+            return {
+                noticeTitle: '',
+                noticeContents: '',
+                images: [
+                    { src: "images/html.jpg", link: "/store?boardNo=S1" },
+                    { src: "images/java.jpg", link: "/store?boardNo=S2" },
+                    { src: "images/java2.jpg", link: "/store?boardNo=S3" },
+                    { src: "images/java3.jpg", link: "/store?boardNo=S4" }
+                ],
+                currentIndex: 0,
+                intervalId: null
+            };
+        },
+        methods: {
+            async fetchNotice() {
+                try {
+                    const res = await fetch('http://localhost:3009/api/notice');
+                    const data = await res.json();
+                    this.noticeTitle = data.title;
+                    this.noticeContents = data.contents;
+                } catch (err) { console.error(err); }
+            },
+            startSlider() { this.intervalId = setInterval(this.nextSlide, 5000); },
+            stopSlider() { clearInterval(this.intervalId); this.intervalId = null; },
+            nextSlide() { this.currentIndex = (this.currentIndex + 1) % this.images.length; },
+            prevSlide() { this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length; },
+            goToSlide(i) { this.currentIndex = i; },
+            goToLink(link) { if (link) window.location.href = link; }
+        },
+        mounted() { this.startSlider(); this.fetchNotice(); },
+        beforeUnmount() { this.stopSlider(); }
+    };
+
+    // ===== 기타 페이지 컴포넌트 =====
+    const NoticePage = { template: `<div><h3>공지사항 페이지</h3></div>` };
+    const QnaPage = { template: `<div><h3>문의게시판</h3></div>` };
+    const StorePage = { template: `<div><h3>스토어 페이지</h3></div>` };
+    const LoginPage = { template: `<div><h3>로그인 페이지</h3></div>` };
+    const JoinPage = { template: `<div><h3>회원가입 페이지</h3></div>` };
+    const SearchPage = { template: `<div><h3>검색 페이지</h3></div>` };
+    const MyPage = { template: `<div><h3>내 정보 페이지</h3></div>` };
+
+    // ===== Router =====
+    const routes = [
+        { path: "/", component: MainPage },
+        { path: "/notice", component: NoticePage },
+        { path: "/qna", component: QnaPage },
+        { path: "/store", component: StorePage },
+        { path: "/login", component: LoginPage },
+        { path: "/join", component: JoinPage },
+        { path: "/search", component: SearchPage },
+        { path: "/mypage", component: MyPage }
+    ];
+
+    const router = VueRouter.createRouter({ history: VueRouter.createWebHistory(), routes });
+
+    // ===== Vue App =====
+    const app = Vue.createApp({});
+    app.component("header-component", HeaderComponent);
+    app.component("footer-component", FooterComponent);
+    app.use(router);
+    app.mount("#app");
+
+</script>
