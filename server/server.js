@@ -42,13 +42,17 @@ app.get('/board/list', async (req, res) => {
   let query = "";
   let query3 = "";
   if (category == 1) {
-    query = `SELECT N.*, TO_CHAR(CDATETIME, 'YYYY-MM-DD') AS CDATE FROM TBL_NOTICE N`;
+    query = `SELECT N.BOARDNO, N.TITLE, N.CONTENTS, N.USERID, N.CDATETIME, N.CNT, U.NICKNAME, TO_CHAR(N.CDATETIME, 'YYYY-MM-DD') AS CDATE, COUNT(C.COMMENTNO) AS COMMENT_COUNT
+FROM TBL_NOTICE N
+INNER JOIN TBL_USER U ON N.USERID = U.USERID
+LEFT JOIN TBL_COMMENT C ON C.BOARDNO = N.BOARDNO
+GROUP BY N.BOARDNO, N.TITLE, N.CONTENTS, N.USERID, N.CDATETIME, N.CNT, U.NICKNAME`;
     query3 = `SELECT COUNT(*) FROM TBL_NOTICE`;
   } else if (category == 2) {
-    query = `SELECT Q.*, TO_CHAR(CDATETIME, 'YYYY-MM-DD') AS CDATE FROM TBL_QNA Q`;
+    query = `SELECT N.*, NICKNAME, TO_CHAR(N.CDATETIME, 'YYYY-MM-DD') AS CDATE FROM TBL_QNA N INNER JOIN TBL_USER U ON N.USERID = U.USERID`;
     query3 = `SELECT COUNT(*) FROM TBL_QNA`;
   } else if (category == 3) {
-    query = `SELECT S.*, TO_CHAR(CDATETIME, 'YYYY-MM-DD') AS CDATE FROM TBL_STORELIST S`;
+    query = `SELECT N.*, NICKNAME, TO_CHAR(N.CDATETIME, 'YYYY-MM-DD') AS CDATE FROM TBL_STORELIST N INNER JOIN TBL_USER U ON N.USERID = U.USERID`;
     query3 = `SELECT COUNT(*) FROM TBL_STORELIST`;
   }
 
@@ -59,7 +63,7 @@ app.get('/board/list', async (req, res) => {
   }
 
   try {
-    const result = await connection.execute(query + query2 + ` ORDER BY CDATETIME OFFSET ${offset} ROWS FETCH NEXT ${pageSize} ROW ONLY`);
+    const result = await connection.execute(query + query2 + ` ORDER BY N.CDATETIME OFFSET ${offset} ROWS FETCH NEXT ${pageSize} ROW ONLY`);
     const columnNames = result.metaData.map(column => column.name);
     // 쿼리 결과를 JSON 형태로 변환
     const rows = result.rows.map(row => {
@@ -90,7 +94,7 @@ app.get('/board/add', async (req, res) => {
   if (kind == 1) {
     query = `INSERT INTO TBL_NOTICE VALUES(SEQ_NOTICE.NEXTVAL, '${title}', '${contents}', '${userId}', 0, SYSDATE, SYSDATE)`;
   } else if (kind == 2) {
-    query = `INSERT INTO TBL_QNA VALUES('Q' || LPAD(SEQ_QNA.NEXTVAL, 2, '0'), '${title}', '${contents}', '${userId}', 0, SYSDATE, SYSDATE)`;
+    query = `INSERT INTO TBL_QNA VALUES('Q' || LPAD(SEQ_QNA.NEXTVAL, 2, '0'), '${title}', '${contents}', '${userId}', 0, SYSDATE, SYSDATE, null)`;
   } else if (kind == 3) {
     query = `INSERT INTO TBL_STORELIST VALUES('S' || LPAD(SEQ_STORE.NEXTVAL, 2, '0'), '${title}', '${contents}', '${userId}', 0, 0, SYSDATE, SYSDATE, '${theme}', ${Pcnt}, ${price})`;
   }
@@ -242,23 +246,26 @@ app.get('/user/info', async (req, res) => {
 app.get('/api/notice', async (req, res) => {
 
   try {
-    // TBL_NOTICE에서 최신 한 줄 가져오기
-    const result = await connection.execute(`SELECT TITLE, CONTENTS FROM TBL_NOTICE 
-             WHERE ROWNUM = 1 ORDER BY CDATETIME DESC`);
-
-    // 결과 보내기
-    if (result.rows.length > 0) {
-      res.json({
-        title: result.rows[0][0],     // TITLE
-        contents: result.rows[0][1]   // CONTENTS
+    const result = await connection.execute(`SELECT TITLE, CONTENTS FROM TBL_NOTICE ORDER BY CDATETIME DESC`);
+    const columnNames = result.metaData.map(column => column.name);
+    // 쿼리 결과를 JSON 형태로 변환
+    const rows = result.rows.map(row => {
+      // 각 행의 데이터를 컬럼명에 맞게 매핑하여 JSON 객체로 변환
+      const obj = {};
+      columnNames.forEach((columnName, index) => {
+        obj[columnName] = row[index];
       });
-    } else {
-      res.json({ title: "공지사항 없음", contents: "" });
-    }
+      return obj;
+    });
 
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("DB Error");
+    // 리턴
+    res.json({
+      result: "success",
+      list: rows
+    });
+  } catch (error) {
+    console.error('Error executing query', error);
+    res.status(500).send('Error executing query');
   }
 });
 
@@ -282,7 +289,7 @@ app.get('/reservation', async (req, res) => {
 });
 
 app.get('/all/list', async (req, res) => {
-  const { boardNo, kind } = req.query;
+  const { boardNo, kind, keyword, searchField } = req.query;
   let query = "";
   if (kind == 'notice') {
     query = "SELECT * FROM TBL_NOTICE ";
@@ -295,8 +302,12 @@ app.get('/all/list', async (req, res) => {
   if (boardNo != null) {
     query2 = `WHERE BOARDNO = '${boardNo}'`;
   }
+  let query3 = "";
+  if (keyword != null) {
+    query3 = `WHERE ${searchField} LIKE '%${keyword}%'`;
+  }
   try {
-    const result = await connection.execute(query + query2);
+    const result = await connection.execute(query + query2 + query3);
     const columnNames = result.metaData.map(column => column.name);
     // 쿼리 결과를 JSON 형태로 변환
     const rows = result.rows.map(row => {
@@ -490,6 +501,65 @@ app.post('/board/increaseCnt', async (req, res) => {
   }
 });
 
+app.get('/comment/list', async (req, res) => {
+  const { boardNo } = req.query;
+  try {
+    const result = await connection.execute(`SELECT COMMENTNO, BOARDNO, NICKNAME, CONTENTS, TO_CHAR(C.CDATETIME, 'YYYY-MM-DD HH24:MI') AS CDATETIME 
+      FROM TBL_COMMENT C INNER JOIN TBL_USER U ON C.USERID = U.USERID WHERE BOARDNO = '${boardNo}' ORDER BY COMMENTNO ASC`);
+    const columnNames = result.metaData.map(column => column.name);
+    // 쿼리 결과를 JSON 형태로 변환
+    const rows = result.rows.map(row => {
+      // 각 행의 데이터를 컬럼명에 맞게 매핑하여 JSON 객체로 변환
+      const obj = {};
+      columnNames.forEach((columnName, index) => {
+        obj[columnName] = row[index];
+      });
+      return obj;
+    });
+    res.json({
+      result: "success",
+      list: rows
+    });
+  } catch (error) {
+    console.error('Error executing query', error);
+    res.status(500).send('Error executing query');
+  }
+});
+
+app.post('/comment/add', async (req, res) => {
+  const { boardNo, contents, userId } = req.body;  // POST body로 데이터 받기
+
+  try {
+    await connection.execute(
+      `INSERT INTO TBL_COMMENT 
+             (COMMENTNO, BOARDNO, USERID, CONTENTS, CDATETIME)
+             VALUES (COMMENT_SEQ.NEXTVAL, :boardNo, :userId, :contents, SYSDATE)`,
+      [boardNo, userId, contents],
+      { autoCommit: true }  // 커밋 자동 적용
+    );
+
+    res.json({ success: true });
+
+  } catch (err) {
+    console.error("댓글 등록 실패:", err);
+    res.status(500).json({ success: false, message: "댓글 등록 실패" });
+  }
+});
+
+app.post('/board/reply', async (req, res) => {
+  const { boardNo, reply } = req.body;
+  try {
+    await connection.execute(
+      `UPDATE TBL_QNA SET REPLY = :reply WHERE BOARDNO = :boardNo`,
+      [reply, boardNo],
+      { autoCommit: true }
+    );
+    res.json({ success: true });
+  } catch (e) {
+    console.error("답글 등록 실패:", e);
+    res.status(500).json({ success: false });
+  }
+});
 
 
 // 서버 시작

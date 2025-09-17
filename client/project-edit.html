@@ -8,10 +8,11 @@
     <script src="https://code.jquery.com/jquery-3.7.1.js"
         integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="common.css">
+    <script src="common.js"></script> <!-- 이전에 만든 JS -->
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            margin: 20px;
         }
 
         .form-box {
@@ -72,6 +73,8 @@
 </head>
 
 <body>
+    <div id="header-container"></div>
+
     <div id="app" class="form-box">
         <h2>데이터 수정</h2>
 
@@ -128,6 +131,8 @@
             <button class="btn" @click="fnUpdateUser">수정하기</button>
         </div>
     </div>
+
+    <div id="footer-container"></div>
 </body>
 
 </html>
@@ -185,7 +190,7 @@
                     data: JSON.stringify(self.boardData),
                     success: function (res) {
                         alert("게시판 데이터가 수정되었습니다!");
-                        location.href="project-admin.html";
+                        location.href = "project-main.html";
                     },
                     error: function (err) {
                         console.error(err);
@@ -201,7 +206,7 @@
                     data: JSON.stringify(self.userData),
                     success: function (res) {
                         alert("회원 데이터가 수정되었습니다!");
-                        location.href="project-main.html";
+                        location.href = "project-main.html";
                     },
                     error: function (err) {
                         console.error(err);
@@ -218,6 +223,15 @@
             self.userId = queryParams.get('userId') || '';
 
             self.fnLoadData();
+            let attempts = 0;
+            const headerCheckInterval = setInterval(() => {
+                attempts++;
+                const authBtn = document.getElementById('auth-btn');
+                if (authBtn || attempts > 50) { // 50*100ms = 5초 후 종료
+                    clearInterval(headerCheckInterval);
+                    if (authBtn) checkLoginStatus();
+                }
+            }, 100);
         }
     });
 

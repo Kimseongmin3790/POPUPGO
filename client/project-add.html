@@ -135,9 +135,9 @@
                 <tr>
                     <th>게시판 타입</th>
                     <td>
-                        <label><input type="radio" v-model="kind" value="1">공지사항</label>
+                        <label v-if="status == 'A'"><input type="radio" v-model="kind" value="1">공지사항</label>
                         <label><input type="radio" v-model="kind" value="2">문의게시판</label>
-                        <label><input type="radio" v-model="kind" value="3">스토어</label>
+                        <label v-if="status == 'A' || status == 'S'"><input type="radio" v-model="kind" value="3">스토어</label>
                     </td>
                 </tr>
                 <tr>
@@ -187,13 +187,26 @@
                 userId: "",
                 theme: "",
                 cnt: "",
-                price: ""
+                price: "",
+                status: ""
             };
         },
         methods: {
             // 함수(메소드) - (key : function())
             fnAdd: function () {
                 let self = this;
+                if (!self.kind) {
+                    alert("게시판 타입을 지정해주세요");
+                    return;
+                }
+                if (!self.title) {
+                    alert("제목을 입력해주세요");
+                    return;
+                }
+                if (!self.contents) {
+                    alert("내용을 입력해주세요");
+                    return;
+                }
                 let param = {
                     kind: self.kind,
                     title: self.title,
@@ -260,6 +273,7 @@
             // 처음 시작할 때 실행되는 부분
             let self = this;
             self.userId = sessionStorage.getItem('sessionId');
+            self.status = sessionStorage.getItem('sessionStatus');
             const headerCheckInterval = setInterval(() => {
                 if (document.getElementById('auth-btn')) {
                     clearInterval(headerCheckInterval);

@@ -77,6 +77,26 @@
                     <div class="content" v-html="info.CONTENTS"></div>
                     <a href="project-board.html?kind=1&THEME=null" class="back">← 목록으로 돌아가기</a>
                 </div>
+
+                <div class="card">
+                    <h3>댓글</h3>
+
+                    <!-- 댓글 목록 -->
+                    <div v-if="comments.length > 0">
+                        <div v-for="(c, i) in comments" :key="i" class="comment">
+                            <p><strong>{{ c.NICKNAME }}</strong> <small>{{ c.CDATETIME }}</small></p>
+                            <p>{{ c.CONTENTS }}</p>
+                            <hr>
+                        </div>
+                    </div>
+                    <div v-else>
+                        <p>등록된 댓글이 없습니다.</p>
+                    </div>
+
+                    <!-- 댓글 작성 -->
+                    <textarea v-model="newComment" placeholder="댓글을 입력하세요" rows="3" style="width:100%;"></textarea>
+                    <button @click="fnAddComment" style="margin-top:10px;">댓글 등록</button>
+                </div>
             </div>
         </div>
     </div>
@@ -88,7 +108,13 @@
 <script>
     const app = Vue.createApp({
         data() {
-            return { info: {}, boardNo: "" };
+            return {
+                info: {},
+                boardNo: "",
+                comments: [],
+                newComment: "",
+                sessionStatus: ""
+            };
         },
         methods: {
             fnInfo() {
@@ -102,9 +128,54 @@
                         self.info = data.info;
                     }
                 });
+            },
+            fnGetComments() {
+                let self = this;
+                $.ajax({
+                    url: "http://localhost:3009/comment/list",
+                    dataType: "json",
+                    type: "GET",
+                    data: { boardNo: self.boardNo },
+                    success(data) {
+                        self.comments = data.list || [];
+                    }
+                });
+            },
+            fnAddComment() {
+                let self = this;
+
+                if (!self.newComment.trim()) {
+                    alert("댓글을 입력하세요.");
+                    return;
+                }
+
+                $.ajax({
+                    url: "http://localhost:3009/comment/add",  // 서버 댓글 등록 API
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        boardNo: self.boardNo,           // 상세페이지에서 가져온 게시글 번호
+                        contents: self.newComment,       // 작성한 댓글 내용
+                        userId: sessionStorage.getItem("sessionId") || "익명"  // 로그인 유저ID
+                    }),
+                    success(data) {
+                        if (data.success) {
+                            self.newComment = "";        // 입력창 초기화
+                            self.fnGetComments();        // 댓글 목록 갱신
+                        } else {
+                            alert("댓글 등록 실패");
+                        }
+                    },
+                    error(err) {
+                        console.error(err);
+                        alert("서버 오류 발생");
+                    }
+                });
             }
         },
         mounted() {
+            let self = this;
+            self.sessionStatus = sessionStorage.getItem("sessionStatus");
             let attempts = 0;
             const headerCheckInterval = setInterval(() => {
                 attempts++;
@@ -115,8 +186,9 @@
                 }
             }, 100);
             const queryParams = new URLSearchParams(window.location.search);
-            this.boardNo = queryParams.get('boardNo') || '';
-            this.fnInfo();
+            self.boardNo = queryParams.get('boardNo') || '';
+            self.fnInfo();
+            self.fnGetComments();
         }
     });
     app.mount('#app');

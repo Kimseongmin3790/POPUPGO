@@ -4,29 +4,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>게시글 검색</title>
     <script src="https://code.jquery.com/jquery-3.7.1.js"
         integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link rel="stylesheet" href="common.css">
-    <script src="common.js"></script> <!-- 이전에 만든 JS -->
+    <script src="common.js"></script>
     <style>
-        table,
-        tr,
-        th,
-        td {
-            border: 1px solid black;
-            border-collapse: collapse;
-            padding: 5px 10px;
+        /* body 기본 설정 */
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f4f6f9;
+
+            /* 화면 전체를 flex로 사용 */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* container 중앙 정렬 */
+        #container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* 가로 중앙 정렬 */
+            justify-content: flex-start;
+            /* 세로 방향 위쪽부터 배치 */
+            width: 100%;
+            flex: 1;
+            /* header/footer 사이에서 남는 공간 차지 */
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* 검색 wrapper는 기존 그대로 */
+        #search-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-y: auto;
+            width: 100%;
+            max-width: 1000px;
+            /* 최대 너비 제한 */
+            background: #f4f6f9;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .search-box select {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            min-width: 150px;
+        }
+
+        .search-box input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .search-box button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .search-box button:hover {
+            background-color: #45a049;
+        }
+
+        .post-card {
+            width: 100%;
+            max-width: 800px;
+            background-color: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: 0.3s;
+        }
+
+        .post-card:hover {
+            background-color: #f1f1f1;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .post-title {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .post-meta {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .no-result {
             text-align: center;
-        }
-
-        th {
-            background-color: beige;
-        }
-
-        tr:nth-child(even) {
-            background-color: azure;
+            color: #999;
+            font-size: 16px;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -35,96 +132,90 @@
     <div id="app">
         <div id="header-container"></div>
 
-        <div id="page-wrapper">
-            <div id="container">
-                <input type="text">
-                <button>검색</button>
-                <div>
-                    <a href="project-main.html"><button>메인으로</button></a>
+        <div id="container">
+            <div id="search-wrapper">
+                <div class="search-box">
+                    <select v-model="category">
+                        <option value="notice">공지사항</option>
+                        <option value="qna">문의게시판</option>
+                        <option value="store">스토어</option>
+                    </select>
+                    <select v-model="searchField">
+                        <option value="TITLE">제목</option>
+                        <option value="CONTENTS">내용</option>
+                        <option value="USERID">작성자</option>
+                    </select>
+                    <input type="text" v-model="keyword" placeholder="검색어를 입력하세요" @keyup.enter="searchPosts">
+                    <button @click="searchPosts">검색</button>
+                </div>
+
+                <div v-if="posts.length > 0">
+                    <div class="post-card" v-for="post in posts" :key="post.id">
+                        <div class="post-title">{{ post.TITLE }}</div>
+                        <div class="post-meta">내용: {{ post.CONTENTS }} | 작성자: {{ post.USERID }}</div>
+                    </div>
+                </div>
+
+                <div v-else class="no-result">
+                    검색 결과가 없습니다.
                 </div>
             </div>
         </div>
 
         <div id="footer-container"></div>
     </div>
+
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    keyword: "",
+                    posts: [],
+                    category: "store",
+                    searchField: "TITLE"
+                };
+            },
+            methods: {
+                searchPosts() {
+                    let self = this;
+                    if (!self.keyword.trim()) {
+                        alert("검색어를 입력해주세요.");
+                        return;
+                    }
+                    $.ajax({
+                        url: "http://localhost:3009/all/list",
+                        type: "GET",
+                        dataType: "json",
+                        data: {
+                            keyword: self.keyword,
+                            kind: self.category,
+                            searchField: self.searchField
+                        },
+                        success: function (data) {
+                            self.posts = data.list;
+                        },
+                        error: function () {
+                            alert("검색 중 오류가 발생했습니다.");
+                        }
+                    });
+                }
+            },
+            mounted() {
+                let self = this;
+                let attempts = 0;
+                const headerCheckInterval = setInterval(() => {
+                    attempts++;
+                    const authBtn = document.getElementById('auth-btn');
+                    if (authBtn || attempts > 50) { // 50*100ms = 5초 후 종료
+                        clearInterval(headerCheckInterval);
+                        if (authBtn) checkLoginStatus();
+                    }
+                }, 100);
+            }
+        });
+
+        app.mount('#app');
+    </script>
 </body>
 
 </html>
-
-<script>
-    const app = Vue.createApp({
-        data() {
-            return {
-                // 변수 - (key : value)
-
-            };
-        },
-        methods: {
-            // 함수(메소드) - (key : function())
-            fnList: function () {
-                let self = this;
-                let param = {};
-                $.ajax({
-                    url: "http://localhost:3009/",
-                    dataType: "json",
-                    type: "GET",
-                    data: param,
-                    success: function (data) {
-
-                    }
-                });
-            },
-            checkLoginStatus() {
-                // sessionStorage에서 아이디와 권한 가져오기
-                const userId = sessionStorage.getItem('sessionId');
-                const userStatus = sessionStorage.getItem('sessionStatus'); // 예: "ADMIN" / "USER"
-                this.isLoggedIn = !!userId;
-
-                // 로그인/로그아웃 버튼
-                const authBtn = document.getElementById('auth-btn');
-                if (authBtn) {
-                    authBtn.textContent = this.isLoggedIn ? '로그아웃' : '로그인';
-                    authBtn.onclick = () => {
-                        if (this.isLoggedIn) {
-                            // 로그아웃 처리
-                            sessionStorage.clear();
-                            this.isLoggedIn = false;
-                            authBtn.textContent = '로그인';
-                            document.getElementById('admin-btn').style.display = 'none';
-                            location.href = "project-login.html";
-                        } else {
-                            // 로그인 페이지 이동
-                            location.href = "project-login.html";
-                        }
-                    };
-                }
-
-                // 관리자 버튼
-                const adminBtn = document.getElementById('admin-btn');
-                if (adminBtn) {
-                    if (userStatus === 'A') {
-                        adminBtn.style.display = 'inline-block';
-                        adminBtn.onclick = () => {
-                            // 관리자 페이지 이동
-                            location.href = "project-admin.html";
-                        };
-                    } else {
-                        adminBtn.style.display = 'none';
-                    }
-                }
-            }
-        }, // methods
-        mounted() {
-            // 처음 시작할 때 실행되는 부분
-            let self = this;
-            const headerCheckInterval = setInterval(() => {
-                if (document.getElementById('auth-btn')) {
-                    clearInterval(headerCheckInterval);
-                    this.checkLoginStatus();
-                }
-            }, 100);
-        }
-    });
-
-    app.mount('#app');
-</script>

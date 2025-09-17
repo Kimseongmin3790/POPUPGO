@@ -88,9 +88,29 @@
                     </div>
                     <div class="content" v-html="info.CONTENTS"></div>
                     <!-- 답글 카드 -->
-                    <div class="reply-card" v-if="info.REPLY">
-                        <strong>답글:</strong>
-                        <div v-html="info.REPLY"></div>
+                    <div class="reply-card">
+                        <!-- 1. 답글이 이미 존재 -->
+                        <div v-if="info.REPLY">
+                            <strong>답글:</strong>
+                            <div v-html="info.REPLY"></div>
+                        </div>
+
+                        <!-- 2. 답글이 없고 권한 없음 -->
+                        <div v-else-if="status !== 'A'">
+                            아직 답글이 작성되지 않았습니다
+                        </div>
+
+                        <!-- 3. 답글이 없고 권한 있음 -->
+                        <div v-else>
+                            <strong>답글 작성:</strong>
+                            <textarea v-model="newReply" placeholder="답글을 입력하세요" rows="3"
+                                style="width:100%; margin-top:10px;"></textarea>
+                            <button @click="fnAddReply" style="margin-top:10px;">답글 등록</button>
+                        </div>
+                    </div>
+                    <div v-if="info.USERID === sessionId || status === 'A'" style="margin-top: 10px;">
+                        <button @click="fnEdit">수정</button>
+                        <button @click="fnRemove">삭제</button>
                     </div>
                     <a href="project-board.html?kind=2&THEME=null" class="back">← 목록으로 돌아가기</a>
                 </div>
@@ -105,7 +125,14 @@
 <script>
     const app = Vue.createApp({
         data() {
-            return { info: {}, boardNo: "" };
+            return {
+                info: {},
+                boardNo: "",
+                newReply: "",
+                status: "",
+                sessionId: "",
+                kind: "qna"
+            };
         },
         methods: {
             fnInfo() {
@@ -119,12 +146,64 @@
                         self.info = data.info;
                     }
                 });
+            },
+            fnAddReply() {
+                let self = this;
+                if (!self.newReply.trim()) return alert("답글을 입력하세요.");
+                $.ajax({
+                    url: "http://localhost:3009/board/reply", // 서버 답글 등록 API
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        boardNo: self.boardNo,
+                        reply: self.newReply
+                    }),
+                    success(data) {
+                        if (data.success) {
+                            self.newReply = "";
+                            self.fnInfo(); // 답글 갱신
+                        } else {
+                            alert("답글 등록 실패");
+                        }
+                    },
+                    error(err) {
+                        console.error(err);
+                        alert("서버 오류 발생");
+                    }
+                });
+            },
+            fnEdit: function () {
+                let self = this;
+                location.href = `project-edit.html?boardNo=${self.boardNo}&kind=${self.kind}&userId=undefined`;
+            },
+            fnRemove: function () {
+                let self = this;
+                if (!confirm("정말 삭제하시겠습니까?")) {
+                    return;
+                }
+                $.ajax({
+                    url: "http://localhost:3009/board/remove",
+                    type: "GET",
+                    data: { 
+                        boardNo: self.boardNo,
+                        kind: self.kind 
+                    },
+                    success(data) {
+                        if (data.result === "success") {
+                            alert("삭제되었습니다");
+                            location.href = "project-board.html?kind=2&THEME=null";
+                        }
+                    }
+                });
             }
         },
         mounted() {
+            let self = this;
             const queryParams = new URLSearchParams(window.location.search);
-            this.boardNo = queryParams.get('boardNo') || '';
-            this.fnInfo();
+            self.boardNo = queryParams.get('boardNo') || '';
+            self.fnInfo();
+            self.status = sessionStorage.getItem("sessionStatus");
+            self.sessionId = sessionStorage.getItem("sessionId");
             let attempts = 0;
             const headerCheckInterval = setInterval(() => {
                 attempts++;

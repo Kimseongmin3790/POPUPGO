@@ -10,11 +10,9 @@
     <script src="https://code.jquery.com/jquery-3.7.1.js"
         integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-
-    <!-- 공통 CSS -->
     <link rel="stylesheet" href="common.css">
+    <script src="common.js"></script>
 
-    <!-- 페이지별 스타일 -->
     <style>
         body {
             font-family: "Noto Sans KR", sans-serif;
@@ -207,100 +205,154 @@
     <!-- 하단 푸터 -->
     <div id="footer-container"></div>
 
-    <!-- 공통 JS -->
-    <script src="common.js"></script>
-
-    <!-- 페이지별 Vue 로직 -->
-    <script>
-        $(function () {
-            // header.html / footer.html 로드
-            $('#header-container').load('header.html');
-            $('#footer-container').load('footer.html');
-        });
-
-        const app = Vue.createApp({
-            data() {
-                return {
-                    id: "",
-                    pwd: "",
-                    pwd2: "",
-                    name: "",
-                    birth: "",
-                    nickName: "",
-                    addr: "",
-                    phone: "",
-                    email: "",
-                    gender: "M",
-                    status: "C",
-                    check: false
-                };
-            },
-            methods: {
-                fnJoin() {
-                    if (!this.check) {
-                        alert("중복체크 후 가입해주세요");
-                        return;
-                    }
-                    if (this.pwd !== this.pwd2) {
-                        alert("비밀번호가 일치하지 않습니다");
-                        return;
-                    }
-
-                    const param = {
-                        id: this.id,
-                        pwd: this.pwd,
-                        name: this.name,
-                        birth: this.birth,
-                        nickName: this.nickName,
-                        addr: this.addr,
-                        phone: this.phone,
-                        email: this.email,
-                        gender: this.gender,
-                        status: this.status
-                    };
-
-                    $.ajax({
-                        url: "http://localhost:3009/user/join",
-                        dataType: "json",
-                        type: "GET",
-                        data: param,
-                        success: function (data) {
-                            if (data.result === "success") {
-                                alert("가입되었습니다");
-                                location.href = "project-login.html";
-                            }
-                        }
-                    });
-                },
-                fnCheck() {
-                    if (this.id.length < 5) {
-                        alert("아이디는 5글자 이상 입력해주세요");
-                        return;
-                    }
-
-                    $.ajax({
-                        url: "http://localhost:3009/user/check",
-                        dataType: "json",
-                        type: "GET",
-                        data: { userId: this.id },
-                        success: (data) => {
-                            if (data.info != null) {
-                                alert("중복된 아이디 입니다.");
-                            } else {
-                                alert("가입 가능한 아이디 입니다.");
-                                this.check = true;
-                            }
-                        }
-                    });
-                },
-                fnAddr() {
-                    window.open("jusoPopup.html", "addr", "width=500, height=500");
-                }
-            }
-        });
-
-        app.mount('#app');
-    </script>
 </body>
 
 </html>
+<script>
+    $(function () {
+        // header.html / footer.html 로드
+        $('#header-container').load('header.html');
+        $('#footer-container').load('footer.html');
+    });
+
+    const app = Vue.createApp({
+        data() {
+            return {
+                id: "",
+                pwd: "",
+                pwd2: "",
+                name: "",
+                birth: "",
+                nickName: "",
+                addr: "",
+                phone: "",
+                email: "",
+                gender: "M",
+                status: "C",
+                check: false
+            };
+        },
+        methods: {
+            fnJoin() {
+                let self = this;
+                if (!self.check) {
+                    alert("중복체크 후 가입해주세요");
+                    return;
+                }
+                if (!self.id) {
+                    alert("아이디를 입력해주세요");
+                    return;
+                }
+                if (!self.pwd) {
+                    alert("비밀번호를 입력해주세요");
+                    return;
+                }
+                const pwdPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{4,}$/;
+                if (!pwdPattern.test(self.pwd)) {
+                    alert("비밀번호는 4자 이상이며 문자와 숫자를 포함해야 합니다");
+                    return;
+                }
+                if (!self.pwd2) {
+                    alert("비밀번호 확인을 입력해주세요");
+                    return;
+                }
+                if (self.pwd !== self.pwd2) {
+                    alert("비밀번호가 일치하지 않습니다");
+                    return;
+                }
+                if (!self.name) {
+                    alert("이름을 입력해주세요");
+                    return;
+                }
+                if (!self.gender) {
+                    alert("성별을 선택해주세요");
+                    return;
+                }
+                if (!self.birth) {
+                    alert("생년월일을 입력해주세요");
+                    return;
+                }
+                if (!self.nickName) {
+                    alert("닉네임을 입력해주세요");
+                    return;
+                }
+                if (!self.addr) {
+                    alert("주소를 입력해주세요");
+                    return;
+                }
+                if (!self.phone) {
+                    alert("휴대전화를 입력해주세요");
+                    return;
+                }
+                if (!self.email) {
+                    alert("이메일을 입력해주세요");
+                    return;
+                }
+
+                const param = {
+                    id: self.id,
+                    pwd: self.pwd,
+                    name: self.name,
+                    birth: self.birth,
+                    nickName: self.nickName,
+                    addr: self.addr,
+                    phone: self.phone,
+                    email: self.email,
+                    gender: self.gender,
+                    status: self.status
+                };
+
+                $.ajax({
+                    url: "http://localhost:3009/user/join",
+                    dataType: "json",
+                    type: "GET",
+                    data: param,
+                    success: function (data) {
+                        if (data.result === "success") {
+                            alert("가입되었습니다");
+                            location.href = "project-login.html";
+                        }
+                    }
+                });
+            },
+            fnCheck() {
+                if (this.id.length < 5) {
+                    alert("아이디는 5글자 이상 입력해주세요");
+                    return;
+                }
+
+                $.ajax({
+                    url: "http://localhost:3009/user/check",
+                    dataType: "json",
+                    type: "GET",
+                    data: { userId: this.id },
+                    success: (data) => {
+                        if (data.info != null) {
+                            alert("중복된 아이디 입니다.");
+                        } else {
+                            alert("가입 가능한 아이디 입니다.");
+                            this.check = true;
+                        }
+                    }
+                });
+            },
+            fnAddr() {
+                window.open("jusoPopup.html", "addr", "width=500, height=500");
+            }
+        },
+        mounted() {
+            let self = this;
+            let attempts = 0;
+            const headerCheckInterval = setInterval(() => {
+                attempts++;
+                const authBtn = document.getElementById('auth-btn');
+                if (authBtn || attempts > 50) { // 50*100ms = 5초 후 종료
+                    clearInterval(headerCheckInterval);
+                    if (authBtn) checkLoginStatus();
+                }
+            }, 100);
+        }
+    });
+
+    app.mount('#app');
+</script>

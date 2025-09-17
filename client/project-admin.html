@@ -1,45 +1,115 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>관리자 페이지</title>
     <script src="https://code.jquery.com/jquery-3.7.1.js"
         integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="common.css"> <!-- 공통 CSS -->
+    <script src="common.js"></script> <!-- 공통 JS -->
     <style>
-        table,
-        tr,
-        th,
-        td {
-            border: 1px solid black;
-            border-collapse: collapse;
-            padding: 5px 10px;
-            text-align: center;
+        /* 전체 레이아웃 */
+        body {
+            margin: 0;
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f4f6f9;
         }
 
-        th {
-            background-color: beige;
+        #app {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
-        tr:nth-child(even) {
-            background-color: azure;
+        #contents {
+            flex: 1;
+            width: 95%;
+            max-width: 1300px;
+            margin: 20px auto;
         }
 
-        table {
-            display: inline-block;
-            vertical-align: top;
-            margin-right: 20px;
+        /* 관리자 메뉴 */
+        .admin-menu {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
         .admin-menu button {
-            margin-right: 10px;
-            padding: 5px 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #2575fc, #6a82fb);
+            color: #fff;
+            font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-        /* 트랜지션 스타일 */
+        .admin-menu button:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+        }
+
+        /* 테이블 스타일 */
+        table {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto 20px auto;
+            border-collapse: collapse;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #2575fc;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f5f7fa;
+        }
+
+        tr:hover {
+            background-color: #e4e9f0;
+        }
+
+        @media (max-width: 768px) {
+
+            table,
+            tr,
+            th,
+            td {
+                display: block;
+                width: 100%;
+            }
+
+            th,
+            td {
+                text-align: left;
+                padding: 10px;
+            }
+
+            tr {
+                margin-bottom: 15px;
+            }
+        }
+
+        /* 트랜지션 효과 */
         .fade-enter-active,
         .fade-leave-active {
             transition: all 0.5s ease;
@@ -55,15 +125,19 @@
 
 <body>
     <div id="app">
-        <div class="admin-menu">
-            <a href="project-main.html"><button>메인으로</button></a>
-            <button @click="showTable('notice')">공지사항 관리</button>
-            <button @click="showTable('qna')">문의게시판 관리</button>
-            <button @click="showTable('store')">스토어 관리</button>
-            <button @click="showTable('user')">회원 관리</button>
-        </div>
+        <!-- 공통 Header -->
+        <div id="header-container"></div>
 
-        <div style="margin-top: 20px;">
+        <div id="contents">
+            <div class="admin-menu">
+                <a href="project-main.html"><button>메인으로</button></a>
+                <button @click="showTable('notice')">공지사항 관리</button>
+                <button @click="showTable('qna')">문의게시판 관리</button>
+                <button @click="showTable('store')">스토어 관리</button>
+                <button @click="showTable('user')">회원 관리</button>
+            </div>
+
+            <!-- 테이블 표시 -->
             <transition name="fade">
                 <table v-show="visibleTable !== null && visibleTable !== 'user'">
                     <tr>
@@ -126,109 +200,103 @@
                 </table>
             </transition>
         </div>
+
+        <!-- 공통 Footer -->
+        <div id="footer-container"></div>
     </div>
+
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    list: [],
+                    userList: [],
+                    visibleTable: null
+                };
+            },
+            methods: {
+                fetchBoard(kind) {
+                    let self = this;
+                    $.ajax({
+                        url: "http://localhost:3009/all/list",
+                        type: "GET",
+                        dataType: "json",
+                        data: { kind: kind },
+                        success: function (data) {
+                            self.list = data.list;
+                        }
+                    });
+                },
+                fnUserList() {
+                    let self = this;
+                    $.ajax({
+                        url: "http://localhost:3009/user/list",
+                        dataType: "json",
+                        type: "GET",
+                        success: function (data) {
+                            self.userList = data.userList;
+                        }
+                    });
+                },
+                showTable(tableName) {
+                    this.visibleTable = tableName;
+                    if (tableName === 'notice' || tableName === 'qna' || tableName === 'store') {
+                        this.fetchBoard(tableName);
+                    } else if (tableName === 'user') {
+                        this.fnUserList();
+                    }
+                },
+                fnEdit(boardNo, kind, userId) {
+                    location.href = `project-edit.html?boardNo=${boardNo}&kind=${kind}&userId=${userId}`;
+                },
+                fnRemove(boardNo, kind) {
+                    if (!confirm("정말 삭제하시겠습니까?")) return;
+                    $.ajax({
+                        url: "http://localhost:3009/board/remove",
+                        dataType: "json",
+                        type: "GET",
+                        data: { boardNo: boardNo, kind: kind },
+                        success: function (data) {
+                            if (data.result === "success") {
+                                alert("삭제되었습니다");
+                                location.reload();
+                            }
+                        }
+                    });
+                },
+                fnRemoveUser(userId) {
+                    if (!confirm("정말 삭제하시겠습니까?")) return;
+                    $.ajax({
+                        url: "http://localhost:3009/user/remove",
+                        dataType: "json",
+                        type: "GET",
+                        data: { userId: userId },
+                        success: function (data) {
+                            if (data.result === "success") {
+                                alert("삭제되었습니다");
+                                location.reload();
+                            }
+                        }
+                    });
+                }
+            },
+            mounted() {
+                // 처음 시작할 때 실행되는 부분
+                let self = this;
+                let attempts = 0;
+                const headerCheckInterval = setInterval(() => {
+                    attempts++;
+                    const authBtn = document.getElementById('auth-btn');
+                    if (authBtn || attempts > 50) { // 50*100ms = 5초 후 종료
+                        clearInterval(headerCheckInterval);
+                        if (authBtn) checkLoginStatus();
+                    }
+                }, 100);
+            }
+        });
+
+        app.mount('#app');
+    </script>
 </body>
 
 </html>
-
-<script>
-    const app = Vue.createApp({
-        data() {
-            return {
-                // 변수 - (key : value)
-                list: [],
-                userList: [],
-                visibleTable: null
-            };
-        },
-        methods: {
-            // 함수(메소드) - (key : function())
-            fetchBoard(kind) {
-                let self = this;
-                $.ajax({
-                    url: "http://localhost:3009/all/list",
-                    type: "GET",
-                    dataType: "json",
-                    data: { kind: kind },
-                    success: function (data) {
-                        self.list = data.list;
-                    }
-                });
-            },
-            fnUserList: function () {
-                let self = this;
-                let param = {};
-                $.ajax({
-                    url: "http://localhost:3009/user/list",
-                    dataType: "json",
-                    type: "GET",
-                    data: param,
-                    success: function (data) {
-                        self.userList = data.userList;
-                    }
-                });
-            },
-            showTable(tableName) {
-                let self = this;
-                self.visibleTable = tableName;
-                if (tableName === 'notice') self.fetchBoard(self.visibleTable);
-                else if (tableName === 'qna') self.fetchBoard(self.visibleTable);
-                else if (tableName === 'store') self.fetchBoard(self.visibleTable);
-                else if (tableName === 'user') self.fnUserList();
-            },
-            fnEdit: function (boardNo, kind, userId) {
-                location.href = `project-edit.html?boardNo=${boardNo}&kind=${kind}&userId=${userId}`;
-            },
-            fnRemove: function (boardNo, kind) {
-                let self = this;
-                if (!confirm("정말 삭제하시겠습니까?")) {
-                    return;
-                }
-                let param = {
-                    boardNo: boardNo,
-                    kind: kind
-                };
-                $.ajax({
-                    url: "http://localhost:3009/board/remove",
-                    dataType: "json",
-                    type: "GET",
-                    data: param,
-                    success: function (data) {
-                        if (data.result == "success") {
-                            alert("삭제되었습니다");
-                            location.href = "project-admin.html";
-                        }
-                    }
-                });
-            },
-            fnRemoveUser: function (userId) {
-                let self = this;
-                if (!confirm("정말 삭제하시겠습니까?")) {
-                    return;
-                }
-                let param = {
-                    userId: userId
-                };
-                $.ajax({
-                    url: "http://localhost:3009/user/remove",
-                    dataType: "json",
-                    type: "GET",
-                    data: param,
-                    success: function (data) {
-                        if (data.result == "success") {
-                            alert("삭제되었습니다");
-                            location.href = "project-admin.html";
-                        }
-                    }
-                });
-            }
-
-        }, // methods
-        mounted() {
-            // 처음 시작할 때 실행되는 부분
-            let self = this;
-        }
-    });
-
-    app.mount('#app');
-</script>

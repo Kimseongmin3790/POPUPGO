@@ -16,10 +16,14 @@ body {
     display: flex;
     justify-content: center;
     /* 가운데 정렬 */
+    max-width: 1200px;
+    margin: 0 auto;
     padding: 0;
     /* 위아래 여백 */
     background: #f4f6f9;
     /* body 배경과 동일 */
+    box-sizing: border-box;
+    overflow-x: hidden;
 }
 
 /* 기존 container 수정 */
@@ -44,20 +48,30 @@ body {
 /* ================= Header ================= */
 #header {
     height: 80px;
-    background-color: rgb(199, 199, 199);
+    background: linear-gradient(90deg, #6a11cb, #2575fc);
+    /* 그라데이션 배경 */
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 20px;
+    padding: 0 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    color: #fff;
 }
 
 .header-left a {
     text-decoration: none;
-    color: black;
+    color: #fff;
 }
 
 .header-left h2 {
     margin: 0;
+    font-size: 1.8rem;
+    font-weight: bold;
+    transition: transform 0.3s;
+}
+
+.header-left h2:hover {
+    transform: scale(1.1);
 }
 
 .header-center {
@@ -73,11 +87,12 @@ body {
     font-weight: bold;
     cursor: pointer;
     padding: 8px 16px;
+    border-radius: 25px;
+    transition: background 0.3s;
 }
 
 .menu-board:hover {
-    color: blue;
-    text-decoration: underline;
+    background: rgba(255, 255, 255, 0.2);
 }
 
 /* 드롭다운 기본 숨김 */
@@ -87,9 +102,10 @@ body {
     top: 100%;
     left: 0;
     width: 150px;
-    background: white;
-    border: 1px solid #aaa;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    background: #fff;
+    color: #333;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     list-style: none;
     margin: 0;
     padding: 0;
@@ -99,18 +115,17 @@ body {
 /* 메뉴 항목 */
 .menu-board .side-menu li {
     padding: 10px;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #eee;
     cursor: pointer;
     transition: background 0.2s;
 }
 
 .menu-board .side-menu li:hover {
-    background: #f2f2f2;
+    background: #f0f0f0;
 }
 
 /* 마우스 올리면 드롭다운 출력 */
 .menu-board:hover .side-menu {
-    color: black;
     display: block;
 }
 
@@ -118,9 +133,9 @@ body {
     margin-left: 15px;
     padding: 8px 16px;
     border: none;
-    border-radius: 6px;
-    background-color: #4CAF50;
-    color: white;
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
     font-size: 14px;
     font-weight: bold;
     cursor: pointer;
@@ -129,7 +144,8 @@ body {
 }
 
 .header-right button:hover {
-    background-color: #45a049;
+    background-color: #fff;
+    color: #2575fc;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
 }
@@ -157,51 +173,81 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    background: #333;
+    background: linear-gradient(135deg, #1f1f1f, #3a3a3a);
     color: #f1f1f1;
-    padding: 20px 40px;
+    padding: 30px 50px;
     margin-top: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
 }
 
 /* footer 3단 영역 */
 #footer div {
     flex: 1;
-    margin: 0 10px;
+    margin: 0 15px;
 }
 
 /* 왼쪽 영역 */
 .footer-left h3 {
     margin: 0 0 10px;
+    font-size: 1.5rem;
+}
+
+.footer-left p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #ccc;
 }
 
 /* 중앙 quick links */
+.footer-center h4 {
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+}
+
 .footer-center ul {
     list-style: none;
     padding: 0;
 }
 
 .footer-center ul li {
-    margin: 5px 0;
+    margin: 6px 0;
 }
 
 .footer-center ul li a {
     text-decoration: none;
     color: #f1f1f1;
+    transition: color 0.3s, transform 0.2s;
 }
 
 .footer-center ul li a:hover {
-    text-decoration: underline;
+    color: #2575fc;
+    transform: translateX(3px);
 }
 
 /* 오른쪽 소셜 + 시계 */
+.footer-right h4 {
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+}
+
 .footer-right .social-icons a {
-    margin-right: 8px;
-    font-size: 20px;
+    margin-right: 10px;
+    font-size: 22px;
+    color: #f1f1f1;
     text-decoration: none;
+    transition: transform 0.3s, color 0.3s;
+}
+
+.footer-right .social-icons a:hover {
+    color: #2575fc;
+    transform: scale(1.2);
 }
 
 #clock {
-    margin-top: 10px;
+    margin-top: 12px;
     font-size: 14px;
     color: #ccc;
+    font-weight: 500;
 }

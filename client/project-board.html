@@ -211,8 +211,12 @@
                         </tr>
                         <tr v-for="item in list" :key="item.BOARDNO">
                             <td>{{item.BOARDNO}}</td>
-                            <td><a href="javascript:;" @click="fnView(item.BOARDNO)">{{item.TITLE}}</a></td>
-                            <td>{{item.USERID}}</td>
+                            <td><a href="javascript:;" @click="fnView(item.BOARDNO)">
+                                    {{item.TITLE}}
+                                    <span style="color: red;" v-if="item.COMMENT_COUNT > 0">[{{item.COMMENT_COUNT}}]</span>
+                                </a>
+                            </td>
+                            <td>{{item.NICKNAME}}</td>
                             <td>{{item.CNT}}</td>
                             <td>{{item.CDATE}}</td>
                         </tr>
