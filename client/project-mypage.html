@@ -160,7 +160,7 @@
                                 <th>예약시간</th>
                                 <th>장소</th>
                                 <th>인원수</th>
-                                <th>가격</th>
+                                <th>총 가격</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -170,7 +170,7 @@
                                 <td>{{item.R_TIME}}</td>
                                 <td>{{item.PLACE}}</td>
                                 <td>{{item.P_CNT}}</td>
-                                <td>{{item.PRICE}}</td>
+                                <td>{{item.PRICE * item.P_CNT}}</td>
                             </tr>
                         </tbody>
                     </table>
