@@ -8,6 +8,8 @@
   <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
     crossorigin="anonymous"></script>
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="stylesheet" href="common.css">
+  <script src="common.js"></script>
 
   <style>
     /* --- 기본 레이아웃 --- */
@@ -33,7 +35,7 @@
     }
 
     .ticket-hero .poster {
-      width: 240px;
+      width: 270px;
       height: 320px;
       border-radius: 6px;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
@@ -186,7 +188,7 @@
 
       .ticket-hero .poster {
         width: 70%;
-        height: 320px;
+        height: 360px;
       }
 
       .ticket-info {
@@ -201,6 +203,8 @@
 </head>
 
 <body>
+  <div id="header-container"></div>
+
   <div id="app">
     <!-- 상단 히어로 바로 위에 버튼 추가 -->
     <div style="display:flex; justify-content:flex-start; gap:12px; padding:16px;">
@@ -210,14 +214,14 @@
 
     <!-- 상단 히어로 -->
     <div class="ticket-hero">
-      <div class="poster" :style="{ backgroundImage: `url(${info.POSTER || 'https://via.placeholder.com/240x320'})` }">
+      <div class="poster" :style="{ backgroundImage: `url(${info?.POSTER || ''})` }">
       </div>
       <div class="meta">
         <h1>{{ info.TITLE }}</h1>
-        <div class="sub">판매자: {{ info.USERID }} · 등록일: {{ info.CDATETIME }}</div>
+        <div class="sub">판매자: {{ info.USERID }} · 등록일: {{ info.CTIME }}</div>
         <div class="action-row">
           <button class="btn btn-primary" @click="fnPopup(boardNo)">예매 / 구매</button>
-          <button class="btn btn-outline">관심상품</button>
+          <button class="btn btn-outline" @click="addInterest">관심스토어</button>
         </div>
       </div>
     </div>
@@ -245,7 +249,7 @@
       <div class="right">
         <div style="font-weight:700; font-size:16px; margin-bottom:8px;">공연 요약</div>
         <div style="font-size:13px; color:#555; margin-bottom:12px;">
-          9.20(토) ~ 9.30 (화) / 강남역 5번 출구 인근
+         {{info.SDATESTR}} ~ {{info.EDATESTR}} / {{info.PLACE}}
         </div>
         <div>
           <button class="btn btn-primary" style="width:100%;" @click="fnPopup(boardNo)">예매하기</button>
@@ -256,10 +260,12 @@
     <!-- 하단 고정바 -->
     <div class="buy-bar">
       <div class="price">₩{{ info.PRICE || '0' }}</div>
-      <button class="btn btn-outline">관심</button>
+      <button class="btn btn-outline" @click="addInterest">관심</button>
       <button class="btn btn-primary" @click="fnPopup(boardNo)">예매 / 구매</button>
     </div>
   </div>
+
+  <div id="footer-container"></div>
 
   <script>
     const app = Vue.createApp({
@@ -298,6 +304,33 @@
         },
         goMain: function () {
           location.href = "project-main.html"; // 메인 페이지로 이동
+        },
+        addInterest: function () {
+          let self = this;
+          if (!self.sessionId) {
+            alert("로그인 후 이용 가능합니다.");
+            location.href = "project-login.html";
+            return;
+          }
+          if (!confirm("관심스토어로 등록 하시겠습니까?")) {
+            return;
+          }
+          $.ajax({
+            url: "http://localhost:3009/interest/add",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+              userId: self.sessionId,
+              boardNo: self.boardNo
+            }),
+            success: function (res) {
+              if (res.success) {
+                alert("관심스토어에 등록되었습니다!");
+              } else {
+                alert("등록 실패: " + res.msg);
+              }
+            }
+          });
         }
       },
       mounted() {
@@ -306,6 +339,15 @@
         self.boardNo = queryParams.get('boardNo') || '';
         self.sessionId = sessionStorage.getItem('sessionId');
         self.fnInfo();
+        let attempts = 0;
+        const headerCheckInterval = setInterval(() => {
+          attempts++;
+          const authBtn = document.getElementById('auth-btn');
+          if (authBtn || attempts > 50) { // 50*100ms = 5초 후 종료
+            clearInterval(headerCheckInterval);
+            if (authBtn) checkLoginStatus();
+          }
+        }, 100);
       }
     });
     app.mount('#app');

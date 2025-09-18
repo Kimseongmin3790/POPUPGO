@@ -26,7 +26,8 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
-        h1, h2 {
+        h1,
+        h2 {
             text-align: center;
             color: #333;
         }
@@ -71,7 +72,9 @@
             color: #555;
         }
 
-        input, select, button {
+        input,
+        select,
+        button {
             padding: 8px;
             border-radius: 6px;
             border: 1px solid #ccc;
@@ -120,24 +123,33 @@
 
             <div class="store-info" v-if="step === 1 || step === 2">
                 <h2>{{ info.TITLE }}</h2>
-                <p>운영 시간: 10:00 ~ 20:00</p>
+                <p>운영 시간: {{info.RESV_START_TIME}} ~ {{info.RESV_END_TIME}}</p>
                 <p>남은 좌석: <span>{{ info.P_CNT }}</span></p>
             </div>
 
             <!-- 1단계: 달력에서 날짜 선택 -->
             <div v-if="step === 1">
                 <h2>예약 가능한 날짜 선택</h2>
-                <div class="week-days">
-                    <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+
+                <div v-for="(month, index) in calendarMonths" :key="index" class="month-section">
+                    <h3 style="text-align:center">{{ month.year }}년 {{ month.month + 1 }}월</h3>
+                    <div class="week-days">
+                        <div>일</div>
+                        <div>월</div>
+                        <div>화</div>
+                        <div>수</div>
+                        <div>목</div>
+                        <div>금</div>
+                        <div>토</div>
+                    </div>
+                    <div class="calendar">
+                        <button v-for="day in month.days" :key="day.date" :disabled="!day.available"
+                            :class="{active: selectedDate === day.date}" @click="selectedDate = day.date">
+                            {{ day.day }}
+                        </button>
+                    </div>
                 </div>
-                <div class="calendar">
-                    <button v-for="day in monthDays" :key="day.date" 
-                            :disabled="!day.available"
-                            :class="{active: selectedDate === day.date}"
-                            @click="selectedDate = day.date">
-                        {{ day.day }}
-                    </button>
-                </div>
+
                 <button :disabled="!selectedDate" @click="step = 2">다음</button>
             </div>
 
@@ -171,9 +183,9 @@
                 return {
                     step: 1,
                     info: {},
-                    monthDays: [], // 달력 정보 {date: 'YYYY-MM-DD', day: 1~31, available: true/false}
+                    calendarMonths: [],
                     selectedDate: '',
-                    availableTimes: ['10:00','11:00','12:00','13:00','14:00','15:00'],
+                    availableTimes: [],
                     resTime: '',
                     resPerson: 1,
                     message: '',
@@ -189,34 +201,58 @@
                         dataType: "json",
                         type: "GET",
                         data: { boardNo: self.boardNo },
-                        success: function(data) {
+                        success: function (data) {
                             self.info = data.info;
 
                             // 서버에서 예약 가능한 날짜를 배열로 받아서 달력 생성
                             // 예시: ['2025-09-16', '2025-09-18', '2025-09-20']
-                            const availableDates = data.availableDates; 
+                            const availableDates = data.availableDates;
 
                             // 이번 달 달력 생성
                             const now = new Date();
                             const year = now.getFullYear();
                             const month = now.getMonth(); // 0~11
-                            const lastDay = new Date(year, month+1, 0).getDate();
-                            const firstDayWeek = new Date(year, month, 1).getDay();
+                            // 이번 달 마지막 날
+                            const lastDayThisMonth = new Date(year, month + 1, 0).getDate();
+                            // 다음 달 마지막 날
+                            const lastDayNextMonth = new Date(year, month + 2, 0).getDate();
 
-                            let days = [];
-                            for(let i=0;i<firstDayWeek;i++){
-                                days.push({date: '', day: '', available: false}); // 빈칸
-                            }
+                            function generateCalendar(year, month, availableDates) {
+                                const firstDayWeek = new Date(year, month, 1).getDay();
+                                const lastDay = new Date(year, month + 1, 0).getDate();
+                                let days = [];
 
-                            for(let d=1; d<=lastDay; d++){
-                                const dateStr = `${year}-${(month+1).toString().padStart(2,'0')}-${d.toString().padStart(2,'0')}`;
-                                days.push({
-                                    date: dateStr,
-                                    day: d,
-                                    available: availableDates.includes(dateStr)
-                                });
+                                for (let i = 0; i < firstDayWeek; i++) {
+                                    days.push({ date: '', day: '', available: false });
+                                }
+
+                                for (let d = 1; d <= lastDay; d++) {
+                                    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                                    days.push({
+                                        date: dateStr,
+                                        day: d,
+                                        available: availableDates.includes(dateStr)
+                                    });
+                                }
+                                return days;
                             }
-                            self.monthDays = days;
+                            let daysThisMonth = generateCalendar(year, month, availableDates);
+                            let daysNextMonth = generateCalendar(year, month + 1, availableDates);
+                            self.calendarMonths = [
+                                { year: year, month: month, days: daysThisMonth },
+                                { year: month === 11 ? year + 1 : year, month: (month + 1) % 12, days: daysNextMonth }
+                            ];
+
+
+                            if (self.info.RESV_START_TIME && self.info.RESV_END_TIME) {
+                                const startHour = parseInt(self.info.RESV_START_TIME.split(':')[0]);
+                                const endHour = parseInt(self.info.RESV_END_TIME.split(':')[0]);
+                                let times = [];
+                                for (let h = startHour; h <= endHour; h++) {
+                                    times.push(`${String(h).padStart(2, '0')}:00`);
+                                }
+                                self.availableTimes = times;
+                            }
                         }
                     });
                 },

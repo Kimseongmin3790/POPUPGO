@@ -116,15 +116,15 @@ app.get('/board/add', async (req, res) => {
 
 app.get('/board/info', async (req, res) => {
   const { boardNo } = req.query;
-  let query = "TBL_NOTICE";
+  let query = "SELECT N.*, TO_CHAR(CDATETIME, 'YYYY-MM-DD HH24:MM') AS CTIME FROM TBL_NOTICE N ";
   if (boardNo.includes("S")) {
-    query = "TBL_STORELIST";
+    query = "SELECT N.*, TO_CHAR(CDATETIME, 'YYYY-MM-DD HH24:MM') AS CTIME, TO_CHAR(RESV_START_DATE, 'YYYY-MM-DD') AS SDATESTR, TO_CHAR(RESV_END_DATE, 'YYYY-MM-DD') AS EDATESTR FROM TBL_STORELIST N ";
   } else if (boardNo.includes("Q")) {
-    query = "TBL_QNA";
+    query = "SELECT N.*, TO_CHAR(CDATETIME, 'YYYY-MM-DD HH24:MM') AS CTIME FROM TBL_QNA N ";
   }
   try {
     const result = await connection.execute(
-      `SELECT * FROM ` + query + ` WHERE BOARDNO = '${boardNo}'`
+      query + `WHERE BOARDNO = '${boardNo}'`
     );
     const columnNames = result.metaData.map(column => column.name);
     // 쿼리 결과를 JSON 형태로 변환
@@ -136,8 +136,12 @@ app.get('/board/info', async (req, res) => {
       });
       return obj;
     });
-    const dates = await connection.execute(`SELECT TO_CHAR(RES_DATE, 'YYYY-MM-DD') AS CDATE FROM TBL_RES_DATE R 
-      INNER JOIN TBL_STORELIST S ON R.BOARDNO = S.BOARDNO WHERE S.BOARDNO = '${boardNo}' ORDER BY RES_DATE`);
+    const dates = await connection.execute(`
+  SELECT TO_CHAR(RES_DATE,'YYYY-MM-DD') AS CDATE
+  FROM TBL_RES_DATE
+  WHERE BOARDNO = :boardNo
+  ORDER BY RES_DATE
+`, [boardNo]);
     const dateResult = dates.rows.map(row => row[0])
     res.json({
       result: "success",
@@ -476,6 +480,34 @@ app.get('/user/reservation', async (req, res) => {
   }
 });
 
+app.get('/user/wishlist', async (req, res) => {
+  const { userId } = req.query;
+  try {
+    const result = await connection.execute(
+      `SELECT I.*, TITLE, PLACE, TO_CHAR(REGDATE, 'YYYY-MM-DD') AS RDATE FROM TBL_INTEREST I 
+      INNER JOIN TBL_STORELIST S ON I.BOARDNO = S.BOARDNO 
+      WHERE I.USERID = '${userId}'`
+    );
+    const columnNames = result.metaData.map(column => column.name);
+    // 쿼리 결과를 JSON 형태로 변환
+    const rows = result.rows.map(row => {
+      // 각 행의 데이터를 컬럼명에 맞게 매핑하여 JSON 객체로 변환
+      const obj = {};
+      columnNames.forEach((columnName, index) => {
+        obj[columnName] = row[index];
+      });
+      return obj;
+    });
+    res.json({
+      result: "success",
+      list: rows
+    });
+  } catch (error) {
+    console.error('Error executing query', error);
+    res.status(500).send('Error executing query');
+  }
+});
+
 app.post('/board/increaseCnt', async (req, res) => {
   const { boardNo } = req.body;
   const boardNoStr = String(boardNo);
@@ -558,6 +590,23 @@ app.post('/board/reply', async (req, res) => {
   } catch (e) {
     console.error("답글 등록 실패:", e);
     res.status(500).json({ success: false });
+  }
+});
+
+app.post('/interest/add', async (req, res) => {
+  const { userId, boardNo } = req.body;  // POST body로 데이터 받기
+  try {
+    await connection.execute(
+      `INSERT INTO TBL_INTEREST (INTEREST_ID, USERID, BOARDNO, REGDATE)
+       VALUES (SEQ_INTEREST.NEXTVAL, :userId, :boardNo, SYSDATE)`,
+      [userId, boardNo],
+      { autoCommit: true }  // 커밋 자동 적용
+    );
+    res.json({ success: true, msg: "관심상품이 등록되었습니다." });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "등록 실패" });
   }
 });
 

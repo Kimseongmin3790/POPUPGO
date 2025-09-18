@@ -145,12 +145,14 @@
                         <p id="user-email"></p>
                         <p id="user-phone"></p>
                         <div class="profile-actions">
-                            <button @click="fnEdit">정보 수정</button>
+                            <button @click="fnEdit">내 정보 수정</button>
+                            <button @click="changeTab('reservation')">내 예약 내역</button>
+                            <button @click="changeTab('wishlist')">내 관심 목록</button>
                         </div>
                     </div>
                 </div>
                 <!-- 예약 내역 테이블 -->
-                <div class="reservation-table">
+                <div class="reservation-table" v-if="selectedTab === 'reservation'">
                     <h3>예약 내역</h3>
                     <table>
                         <thead>
@@ -175,11 +177,34 @@
                         </tbody>
                     </table>
                 </div>
+
+                <div class="reservation-table" v-if="selectedTab === 'wishlist'">
+                    <h3>관심 스토어</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>예약번호</th>
+                                <th>스토어이름</th>
+                                <th>스토어위치</th>
+                                <th>등록일</th>
+                                <th>예약하기</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="item in wishlist" :key="item.INTEREST_ID">
+                                <td>{{item.INTEREST_ID}}</td>
+                                <td>{{item.TITLE}}</td>
+                                <td>{{item.PLACE}}</td>
+                                <td>{{item.RDATE}}</td>
+                                <td><button @click="fnReserv(item.BOARDNO)">예약</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
+            <!-- 공통 푸터 -->
+            <div id="footer-container"></div>
         </div>
-        <!-- 공통 푸터 -->
-        <div id="footer-container"></div>
-    </div>
 
 </body>
 
@@ -214,7 +239,9 @@
             return {
                 // 변수 - (key : value)
                 sessionId: "",
-                list: []
+                list: [],
+                wishlist: [],
+                selectedTab: "reservation"
             };
         },
         methods: {
@@ -234,9 +261,33 @@
                     }
                 });
             },
+            fnWishList: function () {
+                let self = this;
+                $.ajax({
+                    url: "http://localhost:3009/user/wishlist",
+                    dataType: "json",
+                    type: "GET",
+                    data: { userId: self.sessionId },
+                    success: function (data) {
+                        self.wishlist = data.list;
+                    }
+                });
+            },
+            changeTab(tabName) {
+                let self = this;
+                self.selectedTab = tabName;
+                if (tabName === 'reservation') {
+                    self.fnList();
+                } else if (tabName === 'wishlist') {
+                    self.fnWishList();
+                }
+            },
             fnEdit: function () {
                 let userId = this.sessionId;
                 location.href = `project-edit.html?boardNo=null&kind=null&userId=${userId}`;
+            },
+            fnReserv: function (boardNo) {
+                location.href = `project-storeView.html?boardNo=${boardNo}`;
             }
         }, // methods
         mounted() {
