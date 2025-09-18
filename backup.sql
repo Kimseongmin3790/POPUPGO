@@ -1,0 +1,562 @@
+--------------------------------------------------------
+--  파일이 생성됨 - 목요일-9월-18-2025   
+--------------------------------------------------------
+--------------------------------------------------------
+--  DDL for Table TBL_COMMENT
+--------------------------------------------------------
+
+  CREATE TABLE "SYSTEM"."TBL_COMMENT" 
+   (	"COMMENTNO" NUMBER, 
+	"BOARDNO" NUMBER, 
+	"CONTENTS" VARCHAR2(300 BYTE), 
+	"USERID" VARCHAR2(20 BYTE), 
+	"FAVORITE" NUMBER DEFAULT 0, 
+	"P_COMMENTNO" NUMBER, 
+	"CDATETIME" DATE DEFAULT SYSDATE, 
+	"UDATETIME" DATE DEFAULT SYSDATE
+   ) PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 
+ NOCOMPRESS LOGGING
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM" ;
+--------------------------------------------------------
+--  DDL for Table TBL_INTEREST
+--------------------------------------------------------
+
+  CREATE TABLE "SYSTEM"."TBL_INTEREST" 
+   (	"INTEREST_ID" NUMBER, 
+	"USERID" VARCHAR2(50 BYTE), 
+	"BOARDNO" VARCHAR2(20 BYTE), 
+	"REGDATE" DATE DEFAULT SYSDATE
+   ) PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 
+ NOCOMPRESS LOGGING
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM" ;
+--------------------------------------------------------
+--  DDL for Table TBL_NOTICE
+--------------------------------------------------------
+
+  CREATE TABLE "SYSTEM"."TBL_NOTICE" 
+   (	"BOARDNO" NUMBER, 
+	"TITLE" VARCHAR2(50 BYTE), 
+	"CONTENTS" VARCHAR2(500 BYTE), 
+	"USERID" VARCHAR2(20 BYTE), 
+	"CNT" NUMBER DEFAULT 0, 
+	"CDATETIME" DATE DEFAULT SYSDATE, 
+	"UDATETIME" DATE DEFAULT SYSDATE
+   ) PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 
+ NOCOMPRESS LOGGING
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM" ;
+--------------------------------------------------------
+--  DDL for Table TBL_QNA
+--------------------------------------------------------
+
+  CREATE TABLE "SYSTEM"."TBL_QNA" 
+   (	"BOARDNO" VARCHAR2(20 BYTE), 
+	"TITLE" VARCHAR2(50 BYTE), 
+	"CONTENTS" VARCHAR2(500 BYTE), 
+	"USERID" VARCHAR2(20 BYTE), 
+	"CNT" NUMBER DEFAULT 0, 
+	"CDATETIME" DATE DEFAULT SYSDATE, 
+	"UDATETIME" DATE DEFAULT SYSDATE, 
+	"REPLY" VARCHAR2(600 BYTE)
+   ) PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 
+ NOCOMPRESS LOGGING
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM" ;
+--------------------------------------------------------
+--  DDL for Table TBL_RES_DATE
+--------------------------------------------------------
+
+  CREATE TABLE "SYSTEM"."TBL_RES_DATE" 
+   (	"BOARDNO" VARCHAR2(20 BYTE), 
+	"RES_DATE" DATE
+   ) PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 
+ NOCOMPRESS LOGGING
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM" ;
+--------------------------------------------------------
+--  DDL for Table TBL_RESERVATION
+--------------------------------------------------------
+
+  CREATE TABLE "SYSTEM"."TBL_RESERVATION" 
+   (	"RESV_ID" NUMBER(10,0), 
+	"USER_ID" VARCHAR2(20 BYTE), 
+	"STORE_ID" VARCHAR2(20 BYTE), 
+	"R_DATE" DATE, 
+	"R_TIME" VARCHAR2(20 BYTE), 
+	"P_CNT" NUMBER, 
+	"CDATETIME" DATE DEFAULT SYSDATE, 
+	"BOARDNO" VARCHAR2(10 BYTE)
+   ) PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 
+ NOCOMPRESS LOGGING
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM" ;
+
+   COMMENT ON COLUMN "SYSTEM"."TBL_RESERVATION"."RESV_ID" IS '예약번호';
+   COMMENT ON COLUMN "SYSTEM"."TBL_RESERVATION"."USER_ID" IS '아이디';
+   COMMENT ON COLUMN "SYSTEM"."TBL_RESERVATION"."STORE_ID" IS '매장아이디';
+   COMMENT ON COLUMN "SYSTEM"."TBL_RESERVATION"."R_DATE" IS '예약날짜';
+   COMMENT ON COLUMN "SYSTEM"."TBL_RESERVATION"."R_TIME" IS '예약시간';
+   COMMENT ON COLUMN "SYSTEM"."TBL_RESERVATION"."P_CNT" IS '인원수';
+   COMMENT ON COLUMN "SYSTEM"."TBL_RESERVATION"."CDATETIME" IS '생성일';
+--------------------------------------------------------
+--  DDL for Table TBL_STORELIST
+--------------------------------------------------------
+
+  CREATE TABLE "SYSTEM"."TBL_STORELIST" 
+   (	"BOARDNO" VARCHAR2(20 BYTE), 
+	"TITLE" VARCHAR2(50 BYTE), 
+	"CONTENTS" VARCHAR2(500 BYTE), 
+	"USERID" VARCHAR2(20 BYTE), 
+	"CNT" NUMBER DEFAULT 0, 
+	"FAVORITE" NUMBER DEFAULT 0, 
+	"CDATETIME" DATE DEFAULT SYSDATE, 
+	"UDATETIME" DATE DEFAULT SYSDATE, 
+	"KIND" VARCHAR2(20 BYTE), 
+	"P_CNT" NUMBER, 
+	"PRICE" NUMBER DEFAULT 0, 
+	"PLACE" VARCHAR2(100 BYTE), 
+	"POSTER" VARCHAR2(100 BYTE), 
+	"RESV_START_DATE" DATE, 
+	"RESV_END_DATE" DATE, 
+	"RESV_START_TIME" VARCHAR2(5 BYTE), 
+	"RESV_END_TIME" VARCHAR2(5 BYTE)
+   ) PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 
+ NOCOMPRESS LOGGING
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM" ;
+--------------------------------------------------------
+--  DDL for Table TBL_USER
+--------------------------------------------------------
+
+  CREATE TABLE "SYSTEM"."TBL_USER" 
+   (	"USERID" VARCHAR2(20 BYTE), 
+	"PASSWORD" VARCHAR2(20 BYTE), 
+	"NAME" VARCHAR2(20 BYTE), 
+	"BIRTH" CHAR(8 BYTE), 
+	"NICKNAME" VARCHAR2(20 BYTE), 
+	"PROFILE_IMG" VARCHAR2(100 BYTE), 
+	"ADDRESS" VARCHAR2(200 BYTE), 
+	"PHONE" VARCHAR2(20 BYTE), 
+	"EMAIL" VARCHAR2(20 BYTE), 
+	"GENDER" CHAR(1 BYTE), 
+	"STATUS" CHAR(1 BYTE), 
+	"CDATETIME" DATE DEFAULT SYSDATE, 
+	"UDATETIME" DATE DEFAULT SYSDATE
+   ) PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 
+ NOCOMPRESS LOGGING
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM" ;
+REM INSERTING into SYSTEM.TBL_COMMENT
+SET DEFINE OFF;
+Insert into SYSTEM.TBL_COMMENT (COMMENTNO,BOARDNO,CONTENTS,USERID,FAVORITE,P_COMMENTNO,CDATETIME,UDATETIME) values (31,8,'리뷰 어디에 작성하나요?','admin01',0,null,to_date('25/09/17','RR/MM/DD'),to_date('25/09/17','RR/MM/DD'));
+Insert into SYSTEM.TBL_COMMENT (COMMENTNO,BOARDNO,CONTENTS,USERID,FAVORITE,P_COMMENTNO,CDATETIME,UDATETIME) values (32,1,'오픈 좋아요','admin01',0,null,to_date('25/09/17','RR/MM/DD'),to_date('25/09/17','RR/MM/DD'));
+Insert into SYSTEM.TBL_COMMENT (COMMENTNO,BOARDNO,CONTENTS,USERID,FAVORITE,P_COMMENTNO,CDATETIME,UDATETIME) values (21,1,'오픈 소식 기대됩니다! 방문할게요.','user01',0,null,to_date('25/09/17','RR/MM/DD'),to_date('25/09/17','RR/MM/DD'));
+Insert into SYSTEM.TBL_COMMENT (COMMENTNO,BOARDNO,CONTENTS,USERID,FAVORITE,P_COMMENTNO,CDATETIME,UDATETIME) values (22,2,'서버 점검 시간 잘 확인했습니다.','user02',0,null,to_date('25/09/17','RR/MM/DD'),to_date('25/09/17','RR/MM/DD'));
+Insert into SYSTEM.TBL_COMMENT (COMMENTNO,BOARDNO,CONTENTS,USERID,FAVORITE,P_COMMENTNO,CDATETIME,UDATETIME) values (23,3,'가을 이벤트 참여해야겠네요!','user03',0,null,to_date('25/09/17','RR/MM/DD'),to_date('25/09/17','RR/MM/DD'));
+Insert into SYSTEM.TBL_COMMENT (COMMENTNO,BOARDNO,CONTENTS,USERID,FAVORITE,P_COMMENTNO,CDATETIME,UDATETIME) values (24,4,'연휴 동안 고객센터 운영 안되는 거 이해했습니다.','user04',0,null,to_date('25/09/17','RR/MM/DD'),to_date('25/09/17','RR/MM/DD'));
+Insert into SYSTEM.TBL_COMMENT (COMMENTNO,BOARDNO,CONTENTS,USERID,FAVORITE,P_COMMENTNO,CDATETIME,UDATETIME) values (25,5,'신상품 출시 기대돼요! 구매할게요.','user05',0,null,to_date('25/09/17','RR/MM/DD'),to_date('25/09/17','RR/MM/DD'));
+Insert into SYSTEM.TBL_COMMENT (COMMENTNO,BOARDNO,CONTENTS,USERID,FAVORITE,P_COMMENTNO,CDATETIME,UDATETIME) values (26,6,'포인트 적립률 변경 내용 확인했습니다.','user06',0,null,to_date('25/09/17','RR/MM/DD'),to_date('25/09/17','RR/MM/DD'));
+Insert into SYSTEM.TBL_COMMENT (COMMENTNO,BOARDNO,CONTENTS,USERID,FAVORITE,P_COMMENTNO,CDATETIME,UDATETIME) values (27,7,'점검 시간 기억해두겠습니다.','user07',0,null,to_date('25/09/17','RR/MM/DD'),to_date('25/09/17','RR/MM/DD'));
+Insert into SYSTEM.TBL_COMMENT (COMMENTNO,BOARDNO,CONTENTS,USERID,FAVORITE,P_COMMENTNO,CDATETIME,UDATETIME) values (28,8,'리뷰 이벤트 참여하고 싶네요!','user08',0,null,to_date('25/09/17','RR/MM/DD'),to_date('25/09/17','RR/MM/DD'));
+REM INSERTING into SYSTEM.TBL_INTEREST
+SET DEFINE OFF;
+Insert into SYSTEM.TBL_INTEREST (INTEREST_ID,USERID,BOARDNO,REGDATE) values (2,'admin01','S1',to_date('25/09/18','RR/MM/DD'));
+Insert into SYSTEM.TBL_INTEREST (INTEREST_ID,USERID,BOARDNO,REGDATE) values (3,'user01','S1',to_date('25/09/18','RR/MM/DD'));
+Insert into SYSTEM.TBL_INTEREST (INTEREST_ID,USERID,BOARDNO,REGDATE) values (4,'user01','S2',to_date('25/09/18','RR/MM/DD'));
+Insert into SYSTEM.TBL_INTEREST (INTEREST_ID,USERID,BOARDNO,REGDATE) values (5,'user01','S2',to_date('25/09/18','RR/MM/DD'));
+REM INSERTING into SYSTEM.TBL_NOTICE
+SET DEFINE OFF;
+Insert into SYSTEM.TBL_NOTICE (BOARDNO,TITLE,CONTENTS,USERID,CNT,CDATETIME,UDATETIME) values (1,'오픈 안내','팝업스토어 예약사이트 PopUpGo 가 9월 15일 오픈합니다. 다양한 혜택을 준비했으니 많은 방문 부탁 드립니다!','admin01',27,to_date('25/09/03','RR/MM/DD'),to_date('25/09/12','RR/MM/DD'));
+Insert into SYSTEM.TBL_NOTICE (BOARDNO,TITLE,CONTENTS,USERID,CNT,CDATETIME,UDATETIME) values (2,'서버 점검 안내','9월 15일 01:00~03:00 서버 점검으로 서비스가 일시 중단됩니다. 이용에 불편을 드려 죄송합니다.','admin01',10,to_date('25/09/04','RR/MM/DD'),to_date('25/09/12','RR/MM/DD'));
+Insert into SYSTEM.TBL_NOTICE (BOARDNO,TITLE,CONTENTS,USERID,CNT,CDATETIME,UDATETIME) values (3,'가을 이벤트 안내','9월 한달간 구매 금액에 따라 적립금을 드리는 가을 이벤트를 진행합니다.','admin01',7,to_date('25/09/05','RR/MM/DD'),to_date('25/09/12','RR/MM/DD'));
+Insert into SYSTEM.TBL_NOTICE (BOARDNO,TITLE,CONTENTS,USERID,CNT,CDATETIME,UDATETIME) values (4,'추석 연휴 안내','추석 연휴 기간(9월 28일~10월 3일) 동안 고객센터 업무가 중단됩니다.','admin01',7,to_date('25/09/06','RR/MM/DD'),to_date('25/09/12','RR/MM/DD'));
+Insert into SYSTEM.TBL_NOTICE (BOARDNO,TITLE,CONTENTS,USERID,CNT,CDATETIME,UDATETIME) values (5,'신규 상품 출시','가을 신상품이 10월 1일부터 판매됩니다.','admin01',5,to_date('25/09/07','RR/MM/DD'),to_date('25/09/12','RR/MM/DD'));
+Insert into SYSTEM.TBL_NOTICE (BOARDNO,TITLE,CONTENTS,USERID,CNT,CDATETIME,UDATETIME) values (6,'포인트 제도 변경','포인트 적립률이 10월부터 변경됩니다. 자세한 내용은 공지사항을 확인해주세요.','admin01',3,to_date('25/09/08','RR/MM/DD'),to_date('25/09/12','RR/MM/DD'));
+Insert into SYSTEM.TBL_NOTICE (BOARDNO,TITLE,CONTENTS,USERID,CNT,CDATETIME,UDATETIME) values (7,'정기 점검 안내','10월 5일 새벽 2시부터 4시까지 서비스 점검이 예정되어 있습니다.','admin01',2,to_date('25/09/09','RR/MM/DD'),to_date('25/09/12','RR/MM/DD'));
+Insert into SYSTEM.TBL_NOTICE (BOARDNO,TITLE,CONTENTS,USERID,CNT,CDATETIME,UDATETIME) values (8,'리뷰 이벤트','상품 리뷰 작성 시 추첨을 통해 선물을 드립니다.','admin01',3,to_date('25/09/10','RR/MM/DD'),to_date('25/09/12','RR/MM/DD'));
+Insert into SYSTEM.TBL_NOTICE (BOARDNO,TITLE,CONTENTS,USERID,CNT,CDATETIME,UDATETIME) values (10,'개선 사항 피드백','이 페이지에서 개선하면 좋을 내용을 댓글로 적어주세요~','admin01',2,to_date('25/09/17','RR/MM/DD'),to_date('25/09/17','RR/MM/DD'));
+REM INSERTING into SYSTEM.TBL_QNA
+SET DEFINE OFF;
+Insert into SYSTEM.TBL_QNA (BOARDNO,TITLE,CONTENTS,USERID,CNT,CDATETIME,UDATETIME,REPLY) values ('Q5','아이디 변경','아이디를 바꿀 수 있나요?','user05',0,to_date('25/09/05','RR/MM/DD'),to_date('25/09/12','RR/MM/DD'),null);
+Insert into SYSTEM.TBL_QNA (BOARDNO,TITLE,CONTENTS,USERID,CNT,CDATETIME,UDATETIME,REPLY) values ('Q6','상품 교환','상품을 교환하고 싶은데 절차가 어떻게 되나요?','user06',0,to_date('25/09/06','RR/MM/DD'),to_date('25/09/12','RR/MM/DD'),null);
+Insert into SYSTEM.TBL_QNA (BOARDNO,TITLE,CONTENTS,USERID,CNT,CDATETIME,UDATETIME,REPLY) values ('Q7','회원 등급 문의','회원 등급은 어떻게 올라가나요?','user07',0,to_date('25/09/07','RR/MM/DD'),to_date('25/09/12','RR/MM/DD'),null);
+Insert into SYSTEM.TBL_QNA (BOARDNO,TITLE,CONTENTS,USERID,CNT,CDATETIME,UDATETIME,REPLY) values ('Q1','배송 문의','주문한 상품 배송이 아직 오지 않았는데 언제쯤 도착할까요?','user01',29,to_date('25/09/01','RR/MM/DD'),to_date('25/09/12','RR/MM/DD'),'2~3일 안에 배송됩니다');
+Insert into SYSTEM.TBL_QNA (BOARDNO,TITLE,CONTENTS,USERID,CNT,CDATETIME,UDATETIME,REPLY) values ('Q2','반품 방법','상품 반품을 하고 싶은데, 절차가 어떻게 되나요?','user02',10,to_date('25/09/02','RR/MM/DD'),to_date('25/09/12','RR/MM/DD'),null);
+Insert into SYSTEM.TBL_QNA (BOARDNO,TITLE,CONTENTS,USERID,CNT,CDATETIME,UDATETIME,REPLY) values ('Q3','회원 탈퇴','회원 탈퇴를 하고 싶은데 계정은 바로 삭제되나요?','user03',3,to_date('25/09/03','RR/MM/DD'),to_date('25/09/12','RR/MM/DD'),null);
+Insert into SYSTEM.TBL_QNA (BOARDNO,TITLE,CONTENTS,USERID,CNT,CDATETIME,UDATETIME,REPLY) values ('Q4','적립금 사용 문의','적립금은 어떤 상품에 사용할 수 있나요?','user04',1,to_date('25/09/04','RR/MM/DD'),to_date('25/09/12','RR/MM/DD'),null);
+Insert into SYSTEM.TBL_QNA (BOARDNO,TITLE,CONTENTS,USERID,CNT,CDATETIME,UDATETIME,REPLY) values ('Q8','이벤트 참여','리뷰 이벤트는 어떻게 참여할 수 있나요?','user08',0,to_date('25/09/08','RR/MM/DD'),to_date('25/09/12','RR/MM/DD'),null);
+REM INSERTING into SYSTEM.TBL_RES_DATE
+SET DEFINE OFF;
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S2',to_date('25/10/02','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S2',to_date('25/10/03','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S2',to_date('25/10/04','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S2',to_date('25/10/05','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S2',to_date('25/10/06','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S2',to_date('25/10/07','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S2',to_date('25/10/08','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S2',to_date('25/10/09','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S2',to_date('25/10/10','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S3',to_date('25/10/05','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S3',to_date('25/10/06','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S3',to_date('25/10/07','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S3',to_date('25/10/08','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S3',to_date('25/10/09','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S3',to_date('25/10/10','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S3',to_date('25/10/11','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S3',to_date('25/10/12','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S3',to_date('25/10/13','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S3',to_date('25/10/14','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S3',to_date('25/10/15','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S4',to_date('25/10/12','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S4',to_date('25/10/13','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S4',to_date('25/10/14','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S4',to_date('25/10/15','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S4',to_date('25/10/16','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S4',to_date('25/10/17','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S4',to_date('25/10/18','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S4',to_date('25/10/19','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S1',to_date('25/09/20','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S1',to_date('25/09/21','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S1',to_date('25/09/22','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S1',to_date('25/09/23','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S1',to_date('25/09/24','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S1',to_date('25/09/25','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S1',to_date('25/09/26','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S1',to_date('25/09/27','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S1',to_date('25/09/28','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S1',to_date('25/09/29','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S1',to_date('25/09/30','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S2',to_date('25/10/01','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S4',to_date('25/10/20','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S5',to_date('25/10/15','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S5',to_date('25/10/16','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S5',to_date('25/10/17','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S5',to_date('25/10/18','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S5',to_date('25/10/19','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S5',to_date('25/10/20','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S5',to_date('25/10/21','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S5',to_date('25/10/22','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S5',to_date('25/10/23','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S5',to_date('25/10/24','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S5',to_date('25/10/25','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S6',to_date('25/10/18','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S6',to_date('25/10/19','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S6',to_date('25/10/20','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S6',to_date('25/10/21','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S6',to_date('25/10/22','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S6',to_date('25/10/23','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S6',to_date('25/10/24','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S6',to_date('25/10/25','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S6',to_date('25/10/26','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S6',to_date('25/10/27','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S6',to_date('25/10/28','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S7',to_date('25/10/20','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S7',to_date('25/10/21','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S7',to_date('25/10/22','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S7',to_date('25/10/23','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S7',to_date('25/10/24','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S7',to_date('25/10/25','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S7',to_date('25/10/26','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S7',to_date('25/10/27','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S7',to_date('25/10/28','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S7',to_date('25/10/29','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S7',to_date('25/10/30','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S8',to_date('25/10/22','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S8',to_date('25/10/23','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S8',to_date('25/10/24','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S8',to_date('25/10/25','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S8',to_date('25/10/26','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S8',to_date('25/10/27','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S9',to_date('25/10/25','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S9',to_date('25/10/26','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S9',to_date('25/10/27','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S9',to_date('25/10/28','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S9',to_date('25/10/29','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S9',to_date('25/10/30','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S10',to_date('25/10/01','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S10',to_date('25/10/02','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S10',to_date('25/10/03','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S10',to_date('25/10/04','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S10',to_date('25/10/05','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S10',to_date('25/10/06','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S10',to_date('25/10/07','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S10',to_date('25/10/08','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S10',to_date('25/10/09','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S10',to_date('25/10/10','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S11',to_date('25/10/05','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S11',to_date('25/10/06','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S11',to_date('25/10/07','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S11',to_date('25/10/08','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S11',to_date('25/10/09','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S11',to_date('25/10/10','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S11',to_date('25/10/11','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S11',to_date('25/10/12','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S11',to_date('25/10/13','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S11',to_date('25/10/14','RR/MM/DD'));
+Insert into SYSTEM.TBL_RES_DATE (BOARDNO,RES_DATE) values ('S11',to_date('25/10/15','RR/MM/DD'));
+REM INSERTING into SYSTEM.TBL_RESERVATION
+SET DEFINE OFF;
+Insert into SYSTEM.TBL_RESERVATION (RESV_ID,USER_ID,STORE_ID,R_DATE,R_TIME,P_CNT,CDATETIME,BOARDNO) values (1,'user01','store01',to_date('25/09/20','RR/MM/DD'),'14:00',2,to_date('25/09/15','RR/MM/DD'),'S1');
+Insert into SYSTEM.TBL_RESERVATION (RESV_ID,USER_ID,STORE_ID,R_DATE,R_TIME,P_CNT,CDATETIME,BOARDNO) values (2,'user02','store02',to_date('25/09/21','RR/MM/DD'),'16:00',3,to_date('25/09/15','RR/MM/DD'),'S2');
+Insert into SYSTEM.TBL_RESERVATION (RESV_ID,USER_ID,STORE_ID,R_DATE,R_TIME,P_CNT,CDATETIME,BOARDNO) values (3,'user03','store01',to_date('25/09/22','RR/MM/DD'),'18:00',4,to_date('25/09/15','RR/MM/DD'),'S1');
+Insert into SYSTEM.TBL_RESERVATION (RESV_ID,USER_ID,STORE_ID,R_DATE,R_TIME,P_CNT,CDATETIME,BOARDNO) values (4,'user04','store03',to_date('25/09/23','RR/MM/DD'),'11:00',2,to_date('25/09/15','RR/MM/DD'),'S3');
+Insert into SYSTEM.TBL_RESERVATION (RESV_ID,USER_ID,STORE_ID,R_DATE,R_TIME,P_CNT,CDATETIME,BOARDNO) values (5,'user05','store02',to_date('25/09/24','RR/MM/DD'),'19:00',5,to_date('25/09/15','RR/MM/DD'),'S2');
+Insert into SYSTEM.TBL_RESERVATION (RESV_ID,USER_ID,STORE_ID,R_DATE,R_TIME,P_CNT,CDATETIME,BOARDNO) values (6,'user06','store04',to_date('25/09/25','RR/MM/DD'),'13:30',1,to_date('25/09/15','RR/MM/DD'),'S4');
+Insert into SYSTEM.TBL_RESERVATION (RESV_ID,USER_ID,STORE_ID,R_DATE,R_TIME,P_CNT,CDATETIME,BOARDNO) values (7,'user07','store05',to_date('25/09/26','RR/MM/DD'),'15:00',2,to_date('25/09/15','RR/MM/DD'),'S5');
+Insert into SYSTEM.TBL_RESERVATION (RESV_ID,USER_ID,STORE_ID,R_DATE,R_TIME,P_CNT,CDATETIME,BOARDNO) values (8,'user08','store03',to_date('25/09/27','RR/MM/DD'),'17:30',3,to_date('25/09/15','RR/MM/DD'),'S3');
+Insert into SYSTEM.TBL_RESERVATION (RESV_ID,USER_ID,STORE_ID,R_DATE,R_TIME,P_CNT,CDATETIME,BOARDNO) values (9,'user09','store01',to_date('25/09/28','RR/MM/DD'),'20:00',2,to_date('25/09/15','RR/MM/DD'),'S1');
+Insert into SYSTEM.TBL_RESERVATION (RESV_ID,USER_ID,STORE_ID,R_DATE,R_TIME,P_CNT,CDATETIME,BOARDNO) values (10,'user10','store04',to_date('25/09/29','RR/MM/DD'),'12:00',4,to_date('25/09/15','RR/MM/DD'),'S4');
+Insert into SYSTEM.TBL_RESERVATION (RESV_ID,USER_ID,STORE_ID,R_DATE,R_TIME,P_CNT,CDATETIME,BOARDNO) values (12,'user01','store01',to_date('25/09/15','RR/MM/DD'),'10:00',1,to_date('25/09/15','RR/MM/DD'),'S1');
+Insert into SYSTEM.TBL_RESERVATION (RESV_ID,USER_ID,STORE_ID,R_DATE,R_TIME,P_CNT,CDATETIME,BOARDNO) values (13,'user01','store01',to_date('25/09/16','RR/MM/DD'),'10:00',1,to_date('25/09/15','RR/MM/DD'),'S1');
+Insert into SYSTEM.TBL_RESERVATION (RESV_ID,USER_ID,STORE_ID,R_DATE,R_TIME,P_CNT,CDATETIME,BOARDNO) values (14,'user01','store02',to_date('25/09/15','RR/MM/DD'),'10:00',1,to_date('25/09/15','RR/MM/DD'),'S2');
+Insert into SYSTEM.TBL_RESERVATION (RESV_ID,USER_ID,STORE_ID,R_DATE,R_TIME,P_CNT,CDATETIME,BOARDNO) values (15,'user01','store02',to_date('25/09/18','RR/MM/DD'),'11:00',2,to_date('25/09/15','RR/MM/DD'),'S2');
+Insert into SYSTEM.TBL_RESERVATION (RESV_ID,USER_ID,STORE_ID,R_DATE,R_TIME,P_CNT,CDATETIME,BOARDNO) values (16,'user10','store03',to_date('25/09/21','RR/MM/DD'),'13:00',3,to_date('25/09/15','RR/MM/DD'),'S3');
+Insert into SYSTEM.TBL_RESERVATION (RESV_ID,USER_ID,STORE_ID,R_DATE,R_TIME,P_CNT,CDATETIME,BOARDNO) values (17,'user01','store04',to_date('25/09/16','RR/MM/DD'),'13:00',3,to_date('25/09/16','RR/MM/DD'),'S4');
+REM INSERTING into SYSTEM.TBL_STORELIST
+SET DEFINE OFF;
+Insert into SYSTEM.TBL_STORELIST (BOARDNO,TITLE,CONTENTS,USERID,CNT,FAVORITE,CDATETIME,UDATETIME,KIND,P_CNT,PRICE,PLACE,POSTER,RESV_START_DATE,RESV_END_DATE,RESV_START_TIME,RESV_END_TIME) values ('S7','수원 팝업스토어','수원역 AK플라자, 10월 20일부터 10월 30일까지 운영','store07',0,0,to_date('25/09/07','RR/MM/DD'),to_date('25/09/12','RR/MM/DD'),'MOVIE',900,5000,'수원역 AK플라자',null,to_date('25/10/20','RR/MM/DD'),to_date('25/10/30','RR/MM/DD'),'10:00','20:00');
+Insert into SYSTEM.TBL_STORELIST (BOARDNO,TITLE,CONTENTS,USERID,CNT,FAVORITE,CDATETIME,UDATETIME,KIND,P_CNT,PRICE,PLACE,POSTER,RESV_START_DATE,RESV_END_DATE,RESV_START_TIME,RESV_END_TIME) values ('S8','대구 팝업스토어','동성로 중심가, 10월 22일부터 10월 27일까지 운영','store08',0,0,to_date('25/09/08','RR/MM/DD'),to_date('25/09/12','RR/MM/DD'),'COMIC',800,5000,'동성로 중심가',null,to_date('25/10/22','RR/MM/DD'),to_date('25/10/27','RR/MM/DD'),'10:00','20:00');
+Insert into SYSTEM.TBL_STORELIST (BOARDNO,TITLE,CONTENTS,USERID,CNT,FAVORITE,CDATETIME,UDATETIME,KIND,P_CNT,PRICE,PLACE,POSTER,RESV_START_DATE,RESV_END_DATE,RESV_START_TIME,RESV_END_TIME) values ('S1','강남 팝업스토어','강남역 5번 출구 인근, 9월 20일부터 9월 30일까지 운영','store01',27,0,to_date('25/09/01','RR/MM/DD'),to_date('25/09/12','RR/MM/DD'),'MOVIE',299,5000,'강남역 5번 출구','images/moviePopup.png',to_date('25/09/20','RR/MM/DD'),to_date('25/09/30','RR/MM/DD'),'10:00','20:00');
+Insert into SYSTEM.TBL_STORELIST (BOARDNO,TITLE,CONTENTS,USERID,CNT,FAVORITE,CDATETIME,UDATETIME,KIND,P_CNT,PRICE,PLACE,POSTER,RESV_START_DATE,RESV_END_DATE,RESV_START_TIME,RESV_END_TIME) values ('S9','부산 팝업스토어','서면 지하상가, 10월 25일부터 10월 30일까지 운영','store09',0,0,to_date('25/09/09','RR/MM/DD'),to_date('25/09/12','RR/MM/DD'),'FOOD',1200,5000,'서면 지하상가',null,to_date('25/10/25','RR/MM/DD'),to_date('25/10/30','RR/MM/DD'),'10:00','20:00');
+Insert into SYSTEM.TBL_STORELIST (BOARDNO,TITLE,CONTENTS,USERID,CNT,FAVORITE,CDATETIME,UDATETIME,KIND,P_CNT,PRICE,PLACE,POSTER,RESV_START_DATE,RESV_END_DATE,RESV_START_TIME,RESV_END_TIME) values ('S10','광주 팝업스토어','광주 충장로, 10월 1일부터 10월 10일까지 운영','store10',1,0,to_date('25/09/10','RR/MM/DD'),to_date('25/09/12','RR/MM/DD'),'COMIC',200,5000,'광주 충장로',null,to_date('25/10/01','RR/MM/DD'),to_date('25/10/10','RR/MM/DD'),'10:00','20:00');
+Insert into SYSTEM.TBL_STORELIST (BOARDNO,TITLE,CONTENTS,USERID,CNT,FAVORITE,CDATETIME,UDATETIME,KIND,P_CNT,PRICE,PLACE,POSTER,RESV_START_DATE,RESV_END_DATE,RESV_START_TIME,RESV_END_TIME) values ('S11','제주 팝업스토어','제주 신제주, 10월 5일부터 10월 15일까지 운영','store11',1,0,to_date('25/09/11','RR/MM/DD'),to_date('25/09/12','RR/MM/DD'),'FOOD',400,5000,'제주 신제주',null,to_date('25/10/05','RR/MM/DD'),to_date('25/10/15','RR/MM/DD'),'10:00','20:00');
+Insert into SYSTEM.TBL_STORELIST (BOARDNO,TITLE,CONTENTS,USERID,CNT,FAVORITE,CDATETIME,UDATETIME,KIND,P_CNT,PRICE,PLACE,POSTER,RESV_START_DATE,RESV_END_DATE,RESV_START_TIME,RESV_END_TIME) values ('S2','홍대 팝업스토어','홍대입구역 근처, 10월 1일부터 10월 10일까지 운영','store02',4,0,to_date('25/09/02','RR/MM/DD'),to_date('25/09/12','RR/MM/DD'),'COMIC',499,5000,'홍대입구역','images/comicPopup.png',to_date('25/10/01','RR/MM/DD'),to_date('25/10/10','RR/MM/DD'),'11:00','19:00');
+Insert into SYSTEM.TBL_STORELIST (BOARDNO,TITLE,CONTENTS,USERID,CNT,FAVORITE,CDATETIME,UDATETIME,KIND,P_CNT,PRICE,PLACE,POSTER,RESV_START_DATE,RESV_END_DATE,RESV_START_TIME,RESV_END_TIME) values ('S3','잠실 팝업스토어','잠실역 롯데월드몰 1층, 10월 5일부터 10월 15일까지 운영','store03',1,0,to_date('25/09/03','RR/MM/DD'),to_date('25/09/12','RR/MM/DD'),'FOOD',100,5000,'잠실역 롯데월드몰 1층','images/foodPopup.png',to_date('25/10/05','RR/MM/DD'),to_date('25/10/15','RR/MM/DD'),'10:00','20:00');
+Insert into SYSTEM.TBL_STORELIST (BOARDNO,TITLE,CONTENTS,USERID,CNT,FAVORITE,CDATETIME,UDATETIME,KIND,P_CNT,PRICE,PLACE,POSTER,RESV_START_DATE,RESV_END_DATE,RESV_START_TIME,RESV_END_TIME) values ('S4','신촌 팝업스토어','신촌역 2번 출구 근처, 10월 12일부터 10월 20일까지 운영','store04',2,0,to_date('25/09/04','RR/MM/DD'),to_date('25/09/12','RR/MM/DD'),'CAFE',1000,5000,'신촌역 2번출구','images/cafePopup.png',to_date('25/10/12','RR/MM/DD'),to_date('25/10/20','RR/MM/DD'),'10:00','20:00');
+Insert into SYSTEM.TBL_STORELIST (BOARDNO,TITLE,CONTENTS,USERID,CNT,FAVORITE,CDATETIME,UDATETIME,KIND,P_CNT,PRICE,PLACE,POSTER,RESV_START_DATE,RESV_END_DATE,RESV_START_TIME,RESV_END_TIME) values ('S5','역삼 팝업스토어','역삼역 근처, 10월 15일부터 10월 25일까지 운영','store05',0,0,to_date('25/09/05','RR/MM/DD'),to_date('25/09/12','RR/MM/DD'),'CAFE',1100,5000,'역삼역',null,to_date('25/10/15','RR/MM/DD'),to_date('25/10/25','RR/MM/DD'),'10:00','20:00');
+Insert into SYSTEM.TBL_STORELIST (BOARDNO,TITLE,CONTENTS,USERID,CNT,FAVORITE,CDATETIME,UDATETIME,KIND,P_CNT,PRICE,PLACE,POSTER,RESV_START_DATE,RESV_END_DATE,RESV_START_TIME,RESV_END_TIME) values ('S6','부평 팝업스토어','부평역 근처, 10월 18일부터 10월 28일까지 운영','store06',0,0,to_date('25/09/06','RR/MM/DD'),to_date('25/09/12','RR/MM/DD'),'MOVIE',1500,5000,'부평역',null,to_date('25/10/18','RR/MM/DD'),to_date('25/10/28','RR/MM/DD'),'10:00','20:00');
+REM INSERTING into SYSTEM.TBL_USER
+SET DEFINE OFF;
+Insert into SYSTEM.TBL_USER (USERID,PASSWORD,NAME,BIRTH,NICKNAME,PROFILE_IMG,ADDRESS,PHONE,EMAIL,GENDER,STATUS,CDATETIME,UDATETIME) values ('user01','pass01','김철수','19900101','철수짱짱','img1.jpg','서울시 강남구','010-1234-5678','user01@email.com','M','C',to_date('25/08/14','RR/MM/DD'),to_date('25/09/16','RR/MM/DD'));
+Insert into SYSTEM.TBL_USER (USERID,PASSWORD,NAME,BIRTH,NICKNAME,PROFILE_IMG,ADDRESS,PHONE,EMAIL,GENDER,STATUS,CDATETIME,UDATETIME) values ('user02','pass02','이영희','19920315','영희는귀여워','img2.jpg','부산시 해운대','010-2345-6789','user02@email.com','F','C',to_date('25/08/14','RR/MM/DD'),to_date('25/08/14','RR/MM/DD'));
+Insert into SYSTEM.TBL_USER (USERID,PASSWORD,NAME,BIRTH,NICKNAME,PROFILE_IMG,ADDRESS,PHONE,EMAIL,GENDER,STATUS,CDATETIME,UDATETIME) values ('admin01','adminpass','관리자','19800101','관리자1','admin.jpg','서울시 중구','010-0000-0000','admin@email.com','M','A',to_date('25/08/14','RR/MM/DD'),to_date('25/09/17','RR/MM/DD'));
+Insert into SYSTEM.TBL_USER (USERID,PASSWORD,NAME,BIRTH,NICKNAME,PROFILE_IMG,ADDRESS,PHONE,EMAIL,GENDER,STATUS,CDATETIME,UDATETIME) values ('user10','pass10','유재석','20000101','국민MC','null','서울시 강남구','010-1111-2222','jaesuk@email.com','M','C',to_date('25/09/17','RR/MM/DD'),to_date('25/09/17','RR/MM/DD'));
+Insert into SYSTEM.TBL_USER (USERID,PASSWORD,NAME,BIRTH,NICKNAME,PROFILE_IMG,ADDRESS,PHONE,EMAIL,GENDER,STATUS,CDATETIME,UDATETIME) values ('user03','pass03','최지우','19951130','지우공주','img3.jpg','인천시 연수구','010-4567-8901','user03@email.com','F','C',to_date('25/08/14','RR/MM/DD'),to_date('25/08/14','RR/MM/DD'));
+Insert into SYSTEM.TBL_USER (USERID,PASSWORD,NAME,BIRTH,NICKNAME,PROFILE_IMG,ADDRESS,PHONE,EMAIL,GENDER,STATUS,CDATETIME,UDATETIME) values ('user06','pw06','김서준','19950315','서준이','profile06.png','서울시 강동구','010-6060-6060','user06@example.com','M','C',to_date('25/09/15','RR/MM/DD'),to_date('25/09/15','RR/MM/DD'));
+Insert into SYSTEM.TBL_USER (USERID,PASSWORD,NAME,BIRTH,NICKNAME,PROFILE_IMG,ADDRESS,PHONE,EMAIL,GENDER,STATUS,CDATETIME,UDATETIME) values ('user04','pass04','홍길동','19910915','홍길동입니다','null','부천시 소사구','010-6543-9876','user04@email.com','M','C',to_date('25/09/15','RR/MM/DD'),to_date('25/09/15','RR/MM/DD'));
+Insert into SYSTEM.TBL_USER (USERID,PASSWORD,NAME,BIRTH,NICKNAME,PROFILE_IMG,ADDRESS,PHONE,EMAIL,GENDER,STATUS,CDATETIME,UDATETIME) values ('user05','pass05','김이름','19970901','이름킴','null','인천시 중구','010-9988-7766','user05@email.com','M','C',to_date('25/09/15','RR/MM/DD'),to_date('25/09/16','RR/MM/DD'));
+Insert into SYSTEM.TBL_USER (USERID,PASSWORD,NAME,BIRTH,NICKNAME,PROFILE_IMG,ADDRESS,PHONE,EMAIL,GENDER,STATUS,CDATETIME,UDATETIME) values ('user07','pw07','이하은','19981225','하은짱','profile07.png','경기도 성남시','010-7070-7070','user07@example.com','F','C',to_date('25/09/15','RR/MM/DD'),to_date('25/09/15','RR/MM/DD'));
+Insert into SYSTEM.TBL_USER (USERID,PASSWORD,NAME,BIRTH,NICKNAME,PROFILE_IMG,ADDRESS,PHONE,EMAIL,GENDER,STATUS,CDATETIME,UDATETIME) values ('user09','pw09','최민아','19941103','민아쓰','profile09.png','대전시 유성구','010-9090-9090','user09@example.com','F','C',to_date('25/09/15','RR/MM/DD'),to_date('25/09/15','RR/MM/DD'));
+Insert into SYSTEM.TBL_USER (USERID,PASSWORD,NAME,BIRTH,NICKNAME,PROFILE_IMG,ADDRESS,PHONE,EMAIL,GENDER,STATUS,CDATETIME,UDATETIME) values ('store07','corp07pw','UVW 컴퍼니','19951230','UVW 팝업스토어','uvw_logo.png','서울시 송파구','010-7777-7777','contact@uvw.com','N','S',to_date('25/09/17','RR/MM/DD'),to_date('25/09/17','RR/MM/DD'));
+Insert into SYSTEM.TBL_USER (USERID,PASSWORD,NAME,BIRTH,NICKNAME,PROFILE_IMG,ADDRESS,PHONE,EMAIL,GENDER,STATUS,CDATETIME,UDATETIME) values ('user08','pw08','박지후','20010210','지후스타','profile08.png','부산시 해운대구','010-8080-8080','user08@example.com','M','C',to_date('25/09/15','RR/MM/DD'),to_date('25/09/15','RR/MM/DD'));
+Insert into SYSTEM.TBL_USER (USERID,PASSWORD,NAME,BIRTH,NICKNAME,PROFILE_IMG,ADDRESS,PHONE,EMAIL,GENDER,STATUS,CDATETIME,UDATETIME) values ('store01','corp01pw','ABC 컴퍼니','19700101','ABC 팝업스토어','abc_logo.png','서울시 종로구','010-1111-1111','contact@abc.com','N','S',to_date('25/09/15','RR/MM/DD'),to_date('25/09/15','RR/MM/DD'));
+Insert into SYSTEM.TBL_USER (USERID,PASSWORD,NAME,BIRTH,NICKNAME,PROFILE_IMG,ADDRESS,PHONE,EMAIL,GENDER,STATUS,CDATETIME,UDATETIME) values ('store02','corp02pw','XYZ 주식회사','19751215','XYZ 팝업스토어','xyz_logo.png','서울시 강남구','010-2222-2222','contact@xyz.com','N','S',to_date('25/09/15','RR/MM/DD'),to_date('25/09/15','RR/MM/DD'));
+Insert into SYSTEM.TBL_USER (USERID,PASSWORD,NAME,BIRTH,NICKNAME,PROFILE_IMG,ADDRESS,PHONE,EMAIL,GENDER,STATUS,CDATETIME,UDATETIME) values ('store03','corp03pw','123 코퍼레이션','19800110','123 팝업스토어','123_logo.png','부산시 해운대구','010-3333-3333','contact@123.com','N','S',to_date('25/09/15','RR/MM/DD'),to_date('25/09/15','RR/MM/DD'));
+Insert into SYSTEM.TBL_USER (USERID,PASSWORD,NAME,BIRTH,NICKNAME,PROFILE_IMG,ADDRESS,PHONE,EMAIL,GENDER,STATUS,CDATETIME,UDATETIME) values ('store04','corp04pw','KLM 주식회사','19850305','KLM 팝업스토어','klm_logo.png','대구시 중구','010-4444-4444','contact@klm.com','N','S',to_date('25/09/15','RR/MM/DD'),to_date('25/09/15','RR/MM/DD'));
+Insert into SYSTEM.TBL_USER (USERID,PASSWORD,NAME,BIRTH,NICKNAME,PROFILE_IMG,ADDRESS,PHONE,EMAIL,GENDER,STATUS,CDATETIME,UDATETIME) values ('store05','corp05pw','OPQ 컴퍼니','19900120','OPQ 팝업스토어','opq_logo.png','인천시 연수구','010-5555-5555','contact@opq.com','N','S',to_date('25/09/15','RR/MM/DD'),to_date('25/09/15','RR/MM/DD'));
+Insert into SYSTEM.TBL_USER (USERID,PASSWORD,NAME,BIRTH,NICKNAME,PROFILE_IMG,ADDRESS,PHONE,EMAIL,GENDER,STATUS,CDATETIME,UDATETIME) values ('store06','corp06pw','RST 주식회사','19920715','RST 팝업스토어','rst_logo.png','광주시 서구','010-6666-6666','contact@rst.com','N','S',to_date('25/09/15','RR/MM/DD'),to_date('25/09/15','RR/MM/DD'));
+Insert into SYSTEM.TBL_USER (USERID,PASSWORD,NAME,BIRTH,NICKNAME,PROFILE_IMG,ADDRESS,PHONE,EMAIL,GENDER,STATUS,CDATETIME,UDATETIME) values ('store08','corp08pw','XYZ 주식회사','20000105','XYZ2 팝업스토어','xyz2_logo.png','부산시 남구','010-8888-8888','contact@xyz2.com','N','S',to_date('25/09/17','RR/MM/DD'),to_date('25/09/17','RR/MM/DD'));
+Insert into SYSTEM.TBL_USER (USERID,PASSWORD,NAME,BIRTH,NICKNAME,PROFILE_IMG,ADDRESS,PHONE,EMAIL,GENDER,STATUS,CDATETIME,UDATETIME) values ('store09','corp09pw','AAA 코퍼레이션','20010312','AAA 팝업스토어','aaa_logo.png','대전시 유성구','010-9999-9999','contact@aaa.com','N','S',to_date('25/09/17','RR/MM/DD'),to_date('25/09/17','RR/MM/DD'));
+Insert into SYSTEM.TBL_USER (USERID,PASSWORD,NAME,BIRTH,NICKNAME,PROFILE_IMG,ADDRESS,PHONE,EMAIL,GENDER,STATUS,CDATETIME,UDATETIME) values ('store10','corp10pw','BBB 주식회사','20020720','BBB 팝업스토어','bbb_logo.png','인천시 남동구','010-1010-1010','contact@bbb.com','N','S',to_date('25/09/17','RR/MM/DD'),to_date('25/09/17','RR/MM/DD'));
+Insert into SYSTEM.TBL_USER (USERID,PASSWORD,NAME,BIRTH,NICKNAME,PROFILE_IMG,ADDRESS,PHONE,EMAIL,GENDER,STATUS,CDATETIME,UDATETIME) values ('store11','corp11pw','CCC 컴퍼니','20031125','CCC 팝업스토어','ccc_logo.png','광주시 동구','010-1111-2222','contact@ccc.com','N','S',to_date('25/09/17','RR/MM/DD'),to_date('25/09/17','RR/MM/DD'));
+--------------------------------------------------------
+--  DDL for Index SYS_C008369
+--------------------------------------------------------
+
+  CREATE UNIQUE INDEX "SYSTEM"."SYS_C008369" ON "SYSTEM"."TBL_COMMENT" ("COMMENTNO") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM" ;
+--------------------------------------------------------
+--  DDL for Index SYS_C008419
+--------------------------------------------------------
+
+  CREATE UNIQUE INDEX "SYSTEM"."SYS_C008419" ON "SYSTEM"."TBL_INTEREST" ("INTEREST_ID") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM" ;
+--------------------------------------------------------
+--  DDL for Index TBL_NOTICE_PK
+--------------------------------------------------------
+
+  CREATE UNIQUE INDEX "SYSTEM"."TBL_NOTICE_PK" ON "SYSTEM"."TBL_NOTICE" ("BOARDNO") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM" ;
+--------------------------------------------------------
+--  DDL for Index TBL_QNA_PK
+--------------------------------------------------------
+
+  CREATE UNIQUE INDEX "SYSTEM"."TBL_QNA_PK" ON "SYSTEM"."TBL_QNA" ("BOARDNO") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM" ;
+--------------------------------------------------------
+--  DDL for Index TBL_RESERVATION_PK
+--------------------------------------------------------
+
+  CREATE UNIQUE INDEX "SYSTEM"."TBL_RESERVATION_PK" ON "SYSTEM"."TBL_RESERVATION" ("RESV_ID") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM" ;
+--------------------------------------------------------
+--  DDL for Index TBL_STORELIST_PK
+--------------------------------------------------------
+
+  CREATE UNIQUE INDEX "SYSTEM"."TBL_STORELIST_PK" ON "SYSTEM"."TBL_STORELIST" ("BOARDNO") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM" ;
+--------------------------------------------------------
+--  DDL for Index SYS_C008362
+--------------------------------------------------------
+
+  CREATE UNIQUE INDEX "SYSTEM"."SYS_C008362" ON "SYSTEM"."TBL_USER" ("USERID") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM" ;
+--------------------------------------------------------
+--  Constraints for Table TBL_COMMENT
+--------------------------------------------------------
+
+  ALTER TABLE "SYSTEM"."TBL_COMMENT" MODIFY ("BOARDNO" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_COMMENT" MODIFY ("CONTENTS" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_COMMENT" MODIFY ("USERID" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_COMMENT" MODIFY ("FAVORITE" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_COMMENT" MODIFY ("CDATETIME" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_COMMENT" MODIFY ("UDATETIME" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_COMMENT" ADD PRIMARY KEY ("COMMENTNO")
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM"  ENABLE;
+--------------------------------------------------------
+--  Constraints for Table TBL_INTEREST
+--------------------------------------------------------
+
+  ALTER TABLE "SYSTEM"."TBL_INTEREST" MODIFY ("USERID" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_INTEREST" MODIFY ("BOARDNO" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_INTEREST" ADD PRIMARY KEY ("INTEREST_ID")
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM"  ENABLE;
+--------------------------------------------------------
+--  Constraints for Table TBL_NOTICE
+--------------------------------------------------------
+
+  ALTER TABLE "SYSTEM"."TBL_NOTICE" MODIFY ("BOARDNO" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_NOTICE" MODIFY ("TITLE" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_NOTICE" MODIFY ("CONTENTS" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_NOTICE" MODIFY ("USERID" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_NOTICE" MODIFY ("CNT" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_NOTICE" MODIFY ("CDATETIME" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_NOTICE" MODIFY ("UDATETIME" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_NOTICE" ADD CONSTRAINT "TBL_NOTICE_PK" PRIMARY KEY ("BOARDNO")
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM"  ENABLE;
+--------------------------------------------------------
+--  Constraints for Table TBL_QNA
+--------------------------------------------------------
+
+  ALTER TABLE "SYSTEM"."TBL_QNA" MODIFY ("BOARDNO" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_QNA" MODIFY ("TITLE" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_QNA" MODIFY ("CONTENTS" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_QNA" MODIFY ("USERID" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_QNA" MODIFY ("CNT" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_QNA" MODIFY ("CDATETIME" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_QNA" MODIFY ("UDATETIME" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_QNA" ADD CONSTRAINT "TBL_QNA_PK" PRIMARY KEY ("BOARDNO")
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM"  ENABLE;
+--------------------------------------------------------
+--  Constraints for Table TBL_RES_DATE
+--------------------------------------------------------
+
+  ALTER TABLE "SYSTEM"."TBL_RES_DATE" MODIFY ("BOARDNO" NOT NULL ENABLE);
+--------------------------------------------------------
+--  Constraints for Table TBL_RESERVATION
+--------------------------------------------------------
+
+  ALTER TABLE "SYSTEM"."TBL_RESERVATION" MODIFY ("RESV_ID" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_RESERVATION" MODIFY ("USER_ID" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_RESERVATION" MODIFY ("STORE_ID" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_RESERVATION" ADD CONSTRAINT "TBL_RESERVATION_PK" PRIMARY KEY ("RESV_ID")
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM"  ENABLE;
+  ALTER TABLE "SYSTEM"."TBL_RESERVATION" MODIFY ("R_DATE" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_RESERVATION" MODIFY ("R_TIME" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_RESERVATION" MODIFY ("P_CNT" NOT NULL ENABLE);
+--------------------------------------------------------
+--  Constraints for Table TBL_STORELIST
+--------------------------------------------------------
+
+  ALTER TABLE "SYSTEM"."TBL_STORELIST" MODIFY ("BOARDNO" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_STORELIST" MODIFY ("TITLE" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_STORELIST" MODIFY ("CONTENTS" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_STORELIST" MODIFY ("USERID" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_STORELIST" MODIFY ("CNT" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_STORELIST" MODIFY ("FAVORITE" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_STORELIST" ADD CONSTRAINT "TBL_STORELIST_PK" PRIMARY KEY ("BOARDNO")
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM"  ENABLE;
+  ALTER TABLE "SYSTEM"."TBL_STORELIST" MODIFY ("CDATETIME" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_STORELIST" MODIFY ("UDATETIME" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_STORELIST" MODIFY ("PRICE" NOT NULL ENABLE);
+--------------------------------------------------------
+--  Constraints for Table TBL_USER
+--------------------------------------------------------
+
+  ALTER TABLE "SYSTEM"."TBL_USER" MODIFY ("PASSWORD" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_USER" MODIFY ("NAME" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_USER" MODIFY ("BIRTH" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_USER" MODIFY ("NICKNAME" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_USER" MODIFY ("ADDRESS" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_USER" MODIFY ("PHONE" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_USER" MODIFY ("EMAIL" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_USER" MODIFY ("GENDER" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_USER" MODIFY ("STATUS" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_USER" MODIFY ("CDATETIME" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_USER" MODIFY ("UDATETIME" NOT NULL ENABLE);
+  ALTER TABLE "SYSTEM"."TBL_USER" ADD PRIMARY KEY ("USERID")
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+  TABLESPACE "SYSTEM"  ENABLE;
